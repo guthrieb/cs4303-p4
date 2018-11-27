@@ -43,11 +43,9 @@ public class Player extends GameObject {
             double xForceComponent = BOOST_FORCE *Math.cos(physicsObject.orientation);
             double yForceComponent = BOOST_FORCE *Math.sin(physicsObject.orientation);
 
-            System.out.println(shape.centerPoint());
-            System.out.println(physicsObject.position);
+
             Vector realWorldCenterPoint = shape.centerPoint().addN(physicsObject.position);
             Vector force = new Vector(xForceComponent, yForceComponent);
-            System.out.println(physicsObject.position);
 //            sketch.point(physicsObject.position);
 //            sketch.line(realWorldCenterPoint, realWorldCenterPoint.addN(force));
 

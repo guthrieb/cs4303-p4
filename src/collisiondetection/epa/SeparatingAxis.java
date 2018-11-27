@@ -77,7 +77,7 @@ public class SeparatingAxis {
         for (int i = 0; i < shape1.polygon.vertexCount; i++) {
             Vector vertex1 = shape1.polygon.vertices[i].addN(position);
 
-            sketch.point(vertex1.x, vertex1.y);
+//            sketch.point(vertex1.x, vertex1.y);
 
             int j;
             if ((j = i + 1) >= shape1.polygon.vertexCount) j = 0;

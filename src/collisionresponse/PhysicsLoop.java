@@ -52,11 +52,11 @@ public class PhysicsLoop {
         }
 
         for (CollisionManifoldData collision : collisions) {
-            for(Vector collisionPoint : collision.getPoints()) {
-                sketch.fill(255, 255, 255);
-                sketch.point(collisionPoint.x, collisionPoint.y);
-                sketch.fill(0, 0, 0);
-            }
+//            for(Vector collisionPoint : collision.getPoints()) {
+//                sketch.fill(255, 255, 255);
+//                sketch.point(collisionPoint.x, collisionPoint.y);
+//                sketch.fill(0, 0, 0);
+//            }
 
             for (int i = 0; i < iterations; i++) {
                 collision.applyImpulse();

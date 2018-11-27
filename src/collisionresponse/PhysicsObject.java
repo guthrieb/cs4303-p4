@@ -64,9 +64,6 @@ public class PhysicsObject {
             return 0;
         }
         Vector radiusVector = force.contactPoint.subtractN(position);
-        System.out.println("Force contact Point: " + force.contactPoint);
-        System.out.println("Position: " + position);
-        System.out.println("Radius Vector: " + radiusVector);
         return Vector.dot(radiusVector, force.directions);
     }
 

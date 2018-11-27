@@ -1,7 +1,6 @@
 package drawing;
 
 
-import collisiondetection.epa.Epa;
 import collisiondetection.shapes.Shape;
 import collisiondetection.shapes.Vector;
 import collisiondetection.shapes.VectorConstants;
@@ -19,7 +18,7 @@ public class Sketch extends PApplet {
 //    private List<Shape> shapes = new ArrayList<>();
     private PhysicsLoop physicsLoop;
     private List<Player> players = new ArrayList<>();
-    private double scale = 0.5;
+    private static final double SCALE = 1;
 //    private Shape shape1;
 //    private Shape shape2;
 
@@ -50,10 +49,9 @@ public class Sketch extends PApplet {
         player.setOrientation(3.0*Math.PI/2.0);
         physicsLoop.objects.add(player);
         players.add(player);
-//        physicsLoop.objects.add(new GameObject(shape3, new Vector(370, 294), 0, 0));
+        physicsLoop.objects.add(new GameObject(shape3, new Vector(500, 500), 0, 0));
 //        physicsLoop.objects.add(new GameObject(new Shape(shape1.polygon.copy(), 0.0), new Vector(470, 114), 2132.3557, 838101.4));
 
-        System.out.println(player.physicsObject.position);
     }
 
     public void keyPressed() {
@@ -83,16 +81,12 @@ public class Sketch extends PApplet {
 
         for(Player player : players) {
             player.update();
-//            point(player.getCenterPoint());
-//            player.drawOrientation(this);
         }
 
         for (GameObject object : physicsLoop.objects) {
-            object.draw(this, scale);
+            object.draw(this, SCALE);
         }
         physicsLoop.step();
-//        physicsLoop.objects.get(0).addForce("", new Vector(1000000, 0));
-
     }
 
     public void point(Vector centerPoint) {
