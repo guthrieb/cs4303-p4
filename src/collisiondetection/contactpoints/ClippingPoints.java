@@ -110,8 +110,7 @@ public class ClippingPoints {
 
 
         if (depth1 < 0) {
-            clippedPoints.remove(1);
-
+            clippedPoints.remove(clippedPoints.size() -1);
         }
 
         drawPoints(clippedPoints);

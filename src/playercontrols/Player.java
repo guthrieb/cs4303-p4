@@ -15,9 +15,9 @@ public class Player extends GameObject {
     private double rotationTorque;
     private RotationDirection currentRotation = RotationDirection.NO_ROTATION;
     private static final double ACCELERATION_RATE = 0.1;
-    private Shape boostingShape ;
-    private Shape movingShape;
-    private Shape droppingShape;
+    private Shape boostingShape = new Shape(PlayerShapes.BOOSTING_SHAPE);
+    private Shape tetheredShape = new Shape(PlayerShapes.TETHERED_SHAPE);
+    private Shape droppingShape = new Shape(PlayerShapes.DROPPER_VERTICES);
 
     public void setRotating(RotationDirection direction) {
         this.currentRotation = direction;
@@ -32,8 +32,8 @@ public class Player extends GameObject {
     }
 
 
-    enum Mode{
-        MOVEMENT, DROPPER, SPHERE
+    public enum Mode{
+        MOVEMENT, DROPPER, TETHER
     }
 
     public void update() {
@@ -78,13 +78,17 @@ public class Player extends GameObject {
         this.dropping = false;
         switch (toChange) {
             case MOVEMENT:
-                this.shape = boostingShape;
+                this.shape = new Shape(PlayerShapes.BOOSTING_SHAPE);
+                this.shape.rotate(physicsObject.orientation);
                 break;
-            case SPHERE:
-                this.shape = movingShape;
+            case TETHER:
+                this.shape = new Shape(PlayerShapes.TETHERED_SHAPE);
+                this.shape.rotate(physicsObject.orientation);
                 break;
             case DROPPER:
-                this.shape = droppingShape;
+                this.shape = new Shape(PlayerShapes.DROPPER_VERTICES);
+                this.shape.rotate(physicsObject.orientation);
+                break;
         }
     }
 

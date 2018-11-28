@@ -14,7 +14,7 @@ public class Shape {
     }
 
     public Polygon polygon;
-    double orientation;
+    public double orientation;
 
     @Override
     public String toString() {
@@ -112,10 +112,15 @@ public class Shape {
     }
 
     public void rotateToOrientation(double orientation) {
+        System.out.println("CURRENT ORIENTATION: " + this.orientation);
+        System.out.println("TARGET ORIENTATION: " + orientation);
+
         this.orientation = orientation;
 
         double theta = this.orientation - orientation;
+        System.out.println(theta);
         rotate(theta);
+        System.out.println();
     }
 
     public void rotate(double theta) {
@@ -127,13 +132,10 @@ public class Shape {
         double[] xR = new double[]{r00, r10};
         double[] yR = new double[]{r01, r11};
 
-
-
         for (int i = 0; i < polygon.vertexCount; i++) {
             polygon.vertices[i].x = polygon.vertices[i].x - centerVector.x;
             polygon.vertices[i].y = polygon.vertices[i].y - centerVector.y;
         }
-
 
         matrixMultiply(centerVector, xR, yR);
     }

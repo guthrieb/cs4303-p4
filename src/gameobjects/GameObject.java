@@ -111,10 +111,6 @@ public class GameObject {
         return null;
     }
 
-    public void setOrientation(double orientation) {
-        shape.rotateToOrientation(orientation);
-    }
-
     public void addForce(String id, Vector vector) {
         physicsObject.addForce(id, vector, shape.centerPoint());
     }

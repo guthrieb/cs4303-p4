@@ -7,6 +7,7 @@ import collisiondetection.shapes.VectorConstants;
 import collisionresponse.PhysicsLoop;
 import gameobjects.GameObject;
 import playercontrols.Player;
+import playercontrols.PlayerShapes;
 import playercontrols.ShapeConstants;
 import processing.core.PApplet;
 
@@ -28,7 +29,7 @@ public class Sketch extends PApplet {
     }
 
     public void settings() {
-        fullScreen();
+        size(500, 500);
         buildShapes();
 
     }
@@ -38,7 +39,8 @@ public class Sketch extends PApplet {
 
         Shape shape2 = new Shape(VectorConstants.VECTORS_4_EDIT);
         Shape shape3 = new Shape(VectorConstants.VECTORS_3_EDIT);
-        Shape playerShape = new Shape(ShapeConstants.BOOSTING_SHAPE);
+        Shape playerShape = new Shape(PlayerShapes.TETHERED_SHAPE);
+//        Shape playerShape = new Shape(ShapeConstants.BOOSTING_SHAPE);
         Shape shape1 = new Shape(VectorConstants.VECTORS_20);
 
 //        physicsLoop.objects.add(new GameObject(shape2, new Vector(width / 2.0, height / 2.0), 0, 0));
@@ -46,7 +48,9 @@ public class Sketch extends PApplet {
 
         Player player = new Player(this, playerShape, new Vector(width/2.0, height/2.0), 2132, 838101.4);
 //        player.physicsObject.angularVelocity+=0.5;
-        player.setOrientation(3.0*Math.PI/2.0);
+        double orientation = player.physicsObject.orientation;
+        System.out.println(orientation);
+//        player.setOrientation(3.0*Math.PI/2.0);
         physicsLoop.objects.add(player);
         players.add(player);
         physicsLoop.objects.add(new GameObject(shape3, new Vector(500, 500), 0, 0));
@@ -57,12 +61,24 @@ public class Sketch extends PApplet {
     public void keyPressed() {
         if(key == 'w') {
             players.get(0).setBoosting(true);
+
         }
         if(key == 'd') {
             players.get(0).setRotating(Player.RotationDirection.RIGHT);
+
         }
         if(key == 'a') {
             players.get(0).setRotating(Player.RotationDirection.LEFT);
+
+        }
+        if(key == '1') {
+            players.get(0).changeMode(Player.Mode.MOVEMENT);
+        }
+        if(key == '2') {
+            players.get(0).changeMode(Player.Mode.TETHER);
+        }
+        if(key == '3') {
+            players.get(0).changeMode(Player.Mode.DROPPER);
         }
     }
 
