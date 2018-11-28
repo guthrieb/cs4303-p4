@@ -1,7 +1,7 @@
 package gameobjects;
 
 import collisiondetection.contactpoints.CollisionManifoldData;
-import collisiondetection.contactpoints.CollisionManifoldFactory;
+import collisiondetection.contactpoints.ClippingPoints;
 import collisiondetection.epa.Epa;
 import collisiondetection.gjk.Gjk;
 import collisiondetection.shapes.Shape;
@@ -64,14 +64,8 @@ public class GameObject {
 
         if (collisionManifest != null) {
             collisionManifest.addObjects(this, object2);
-//            System.out.println(collisionManifest.getObject1().shape.polygon);
-//            System.out.println(collisionManifest.getObject2().shape.polygon);
         }
 
-        if (collisionManifest != null) {
-            System.out.println(collisionManifest.getPoints());
-
-        }
         return collisionManifest;
     }
 
@@ -80,30 +74,24 @@ public class GameObject {
         Shape thisShape = object1.shape;
         Shape thatShape = object2.shape;
 
-//        System.out.println("Original shape1: " + thisShape);
-//        System.out.println("Original shap2: " + thatShape);
-
         Vector object1PositionDiff = this.physicsObject.position.subtractN(thisShape.centerPoint());
         Vector object2PositionDiff = object2.physicsObject.position.subtractN(thatShape.centerPoint());
-//        System.out.println("Positiondiff1:" + object1PositionDiff);
-//        System.out.println("Positiondiff2:" + object2PositionDiff);
+
         Shape shape1 = thisShape.translateN(object1PositionDiff);
         Shape shape2 = thatShape.translateN(object2PositionDiff);
-//        System.out.println(shape1.polygon);
-//        System.out.println(shape2.polygon);
-//        shape2.rotateToOrientation(object2.physicsObject.orientation);
-//        shape1.rotateToOrientation(object1.physicsObject.orientation);
 
 
         Gjk gjk = new Gjk(shape1, shape2, sketch);
         boolean collision = gjk.collision();
         if (collision) {
-            Epa epa = new Epa();
+            Epa epa = new Epa(sketch);
 
             epa.execute(shape1, shape2, gjk.getSimplex());
 
 
-            CollisionManifoldData collisionManifold = CollisionManifoldFactory.getCollisionManifold(shape1, shape2, epa.normal);
+            ClippingPoints clippingPoints = new ClippingPoints(sketch);
+
+            CollisionManifoldData collisionManifold = clippingPoints.getCollisionManifold(shape1, shape2, epa.normal);
 
 
             if (collisionManifold.getPoints().size() > 0) {
@@ -111,9 +99,12 @@ public class GameObject {
                 collisionManifold.addNormal(epa.normal);
 //                System.out.println(epa.type);
                 collisionManifold.addDepth(epa.depth);
+                System.out.println(epa.depth);
 
-                System.out.println(collisionManifold.getCollisionNormal());
 
+                sketch.stroke(0, 255, 0);
+                sketch.line(collisionManifold.getPoints().get(0), collisionManifold.getPoints().get(0).addN(epa.normal.multiplyN(100)));
+                sketch.stroke(0, 0, 0);
                 return collisionManifold;
             }
         }
