@@ -12,6 +12,8 @@ public class PhysicsObject {
     public final double invMass;
     public Vector position;
 
+    public boolean damageable = false;
+
 
     public Vector velocity = new Vector(0, 0);
     public List<Force> forces = new ArrayList<>();
@@ -22,7 +24,14 @@ public class PhysicsObject {
     public double orientation;
     public double angularVelocity;
     public double invInertia;
-    public double terminalVelocity = 10000;
+    public double terminalVelocity = 100000;
+    public Vector mg;
+    public double elasticity;
+    public double linearDamping = 0.989;
+    public double rotationalDamping = 0.96;
+    public double xVelDamping = 1;
+    public double yVelDamping = 1;
+    private List<Double> impulseCollisions = new ArrayList<>();
 
     public PhysicsObject(Shape shape, Vector position, double mass, double momentOfInertia) {
         this.shape = shape;
@@ -41,6 +50,12 @@ public class PhysicsObject {
             this.invInertia = 0;
         }
         this.orientation = 0;
+        this.mg = PhysicsLoop.GRAVITY.multiplyN(mass);
+    }
+
+    public PhysicsObject(Shape shape, Vector position, double mass, double momentOfInertia, boolean damageable) {
+        this(shape, position, mass, momentOfInertia);
+        this.damageable = true;
     }
 
     public void addForce(String id, Vector force, Vector contactPoint, boolean angular) {
@@ -59,7 +74,7 @@ public class PhysicsObject {
         return totalForce;
     }
 
-    public double calculateTorque(Force force) {
+    private double calculateTorque(Force force) {
         if(!force.angular) {
             return 0;
         }
@@ -67,7 +82,7 @@ public class PhysicsObject {
         return Vector.dot(radiusVector, force.directions);
     }
 
-    public double calculateTotalTorque() {
+    double calculateTotalTorque() {
         double totalTorque = 0;
         for (Force force : forces) {
             totalTorque += calculateTorque(force);
@@ -76,28 +91,28 @@ public class PhysicsObject {
     }
 
     public void applyCollisionImpulse(Vector impulse, Vector contactVector) {
+
+
         velocity.addsi( impulse, invMass );
 
         angularVelocity += invInertia * Vector.cross( contactVector, impulse );
 
     }
 
-    public void translate(double v, double v1) {
-        position.x += v;
-        position.y += v1;
-    }
-
-    public void draw(PApplet sketch) {
-        sketch.strokeWeight(5);
-        sketch.point((float)position.x, (float)position.y);
-        sketch.strokeWeight(1);
-    }
-
-    public void moveToPosition(Vector position) {
-        translate(position.x - this.position.x, position.y - this.position.y);
-    }
-
     public void addRotationalAcceleration(double accelerationRate) {
         angularVelocity += accelerationRate;
+    }
+
+    public void resetDirectionalDamping() {
+        this.xVelDamping = 1;
+        this.yVelDamping = 1;
+    }
+
+    public List<Double> getImpulseCollisions() {
+        return impulseCollisions;
+    }
+
+    public void setImpulseCollisions(List<Double> impulseCollisions) {
+        this.impulseCollisions = impulseCollisions;
     }
 }

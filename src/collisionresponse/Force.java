@@ -34,4 +34,12 @@ public class Force {
     public int hashCode() {
         return Objects.hash(forceId);
     }
+
+    @Override
+    public String toString() {
+        return "Force{" +
+                "directions=" + directions +
+                ", contactPoint=" + contactPoint +
+                '}';
+    }
 }

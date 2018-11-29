@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Shape {
+
     public Vector[] getVertices() {
         return polygon.vertices;
     }
@@ -109,18 +110,6 @@ public class Shape {
 
     public void translate(Vector delta) {
         translate(delta.x, delta.y);
-    }
-
-    public void rotateToOrientation(double orientation) {
-        System.out.println("CURRENT ORIENTATION: " + this.orientation);
-        System.out.println("TARGET ORIENTATION: " + orientation);
-
-        this.orientation = orientation;
-
-        double theta = this.orientation - orientation;
-        System.out.println(theta);
-        rotate(theta);
-        System.out.println();
     }
 
     public void rotate(double theta) {

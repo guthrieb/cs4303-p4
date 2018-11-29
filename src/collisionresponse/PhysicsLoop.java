@@ -11,14 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PhysicsLoop {
-    private static final Vector GRAVITY = new Vector(0, 200);
+    public static final Vector GRAVITY = new Vector(0, 200);
     private final Sketch sketch;
     public List<GameObject> objects;
     List<CollisionManifoldData> collisions = new ArrayList<>();
     private double deltaTime;
     private int iterations;
-    private static final double ROTATIONAL_DAMPING = 0.96;
-    private static final double VELOCITY_DAMPING = 0.989;
+
 
     public PhysicsLoop(List<GameObject> objects, int iterations, double dt, Sketch sketch) {
         this.objects = objects;
@@ -28,6 +27,8 @@ public class PhysicsLoop {
     }
 
     public void step() {
+
+
         for(int i = 0; i < objects.size() ; i++) {
             GameObject a = objects.get(i);
             for(int j = i + 1; j < objects.size(); j++) {
@@ -48,20 +49,15 @@ public class PhysicsLoop {
 
 
         for (GameObject object : objects) {
+
+
+
+            object.physicsObject.addForce("",object.physicsObject.mg, object.physicsObject.position, false);
+
             integrateForces(object, deltaTime);
         }
 
-        for (CollisionManifoldData collision : collisions) {
-//            for(Vector collisionPoint : collision.getPoints()) {
-//                sketch.fill(255, 255, 255);
-//                sketch.point(collisionPoint.x, collisionPoint.y);
-//                sketch.fill(0, 0, 0);
-//            }
-
-            for (int i = 0; i < iterations; i++) {
-                collision.applyImpulse();
-            }
-        }
+        applyImpulses();
 
         for (GameObject object : objects) {
             integrateVelocity(object, deltaTime);
@@ -87,6 +83,14 @@ public class PhysicsLoop {
 
     }
 
+    private void applyImpulses() {
+        for (CollisionManifoldData collision : collisions) {
+            for (int i = 0; i < iterations; i++) {
+                collision.applyImpulse();
+            }
+        }
+    }
+
     private void integrateVelocity(GameObject gameObject, double dt) {
         PhysicsObject physicsObject = gameObject.physicsObject;
 
@@ -99,8 +103,10 @@ public class PhysicsLoop {
         gameObject.shape.rotate((physicsObject.orientation + physicsObject.angularVelocity*dt) - physicsObject.orientation);
         physicsObject.orientation += physicsObject.angularVelocity *dt;
 
-        physicsObject.angularVelocity*= ROTATIONAL_DAMPING;
-        physicsObject.velocity.multiply(VELOCITY_DAMPING);
+        physicsObject.angularVelocity*= physicsObject.rotationalDamping;
+        physicsObject.velocity.multiply(physicsObject.linearDamping);
+        physicsObject.velocity.x *= physicsObject.xVelDamping;
+        physicsObject.velocity.y *= physicsObject.yVelDamping;
 
         integrateForces(gameObject, dt);
     }
@@ -114,11 +120,10 @@ public class PhysicsLoop {
             return;
         }
 
-//        System.out.println(physicsObject.calculateTotalForce());
         physicsObject.velocity.addsi(physicsObject.calculateTotalForce(), physicsObject.invMass*dts);
 
 //        System.out.println("Before gravity: " + physicsObject.velocity);
-        physicsObject.velocity.addsi(GRAVITY, dts);
+//        physicsObject.velocity.addsi(GRAVITY.multiplyN(gameObject.physicsObject.gravMod), dts);
 //        System.out.println("After gravity: " + physicsObject.velocity);
         double totalTorque = physicsObject.calculateTotalTorque();
         physicsObject.angularVelocity += totalTorque * physicsObject.invInertia * dts;

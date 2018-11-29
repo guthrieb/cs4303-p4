@@ -4,22 +4,43 @@ import collisiondetection.contactpoints.CollisionManifoldData;
 import collisiondetection.contactpoints.ClippingPoints;
 import collisiondetection.epa.Epa;
 import collisiondetection.gjk.Gjk;
+import drawing.Colour;
 import collisiondetection.shapes.Shape;
 import collisiondetection.shapes.Vector;
 import collisionresponse.PhysicsObject;
 import drawing.Sketch;
-import processing.core.PApplet;
+import processing.core.PConstants;
+import processing.core.PShape;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class GameObject {
+    public String id;
     public Shape shape;
     public collisionresponse.PhysicsObject physicsObject;
+    Colour fillColour = new Colour(100, 100, 100);
+    Colour lineColour = new Colour(255, 0, 0);
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        GameObject object = (GameObject) o;
+        return Objects.equals(id, object.id);
+    }
 
-    public GameObject(Shape shape, Vector position, double mass, double momentOfInertia) {
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    public GameObject(String id, Shape shape, Vector position, double mass, double momentOfInertia, boolean damageable, Colour fillColour, Colour lineColour) {
+        this.id = id;
         this.shape = shape;
-        this.physicsObject = new PhysicsObject(shape, position, mass, momentOfInertia);
+        this.physicsObject = new PhysicsObject(shape, position, mass, momentOfInertia, damageable);
+        this.fillColour = fillColour;
+        this.lineColour = lineColour;
     }
 
     public void applyImpulse(Vector impulse, Vector normal) {
@@ -27,20 +48,26 @@ public class GameObject {
     }
 
 
-    public void draw(PApplet sketch, double scale) {
+    public void draw(Sketch sketch, double scale) {
         if (colliding) {
             sketch.fill(255, 0, 0);
         }
 
+
         Vector[] toDraw = new Vector[shape.polygon.vertexCount];
         for (int i = 0; i < shape.polygon.vertexCount; i++) {
             Vector v = shape.polygon.vertices[i].copy();
-            v.multiply(scale);
 
-            v.add(physicsObject.position);
+            v.multiply(scale);
+            v.add(physicsObject.position.multiplyN(scale));
             toDraw[i] = v;
         }
-//        System.out.println(physicsObject.position);
+
+        PShape pShape = sketch.createShape();
+        pShape.beginShape();
+
+        pShape.stroke(lineColour.r, lineColour.g, lineColour.b);
+        pShape.fill(fillColour.r, fillColour.g, fillColour.b);
 
 
         for (int i = 0; i < toDraw.length; i++) {
@@ -48,10 +75,14 @@ public class GameObject {
             if (((j = i + 1) == toDraw.length)) {
                 j = 0;
             }
+            pShape.vertex((float)toDraw[i].x, (float)toDraw[i].y);
 
-            sketch.line((float) toDraw[i].x, (float) toDraw[i].y, (float) toDraw[j].x, (float) toDraw[j].y);
+//            sketch.line((float) toDraw[i].x, (float) toDraw[i].y, (float) toDraw[j].x, (float) toDraw[j].y);
         }
 
+        pShape.endShape(PConstants.CLOSE);
+
+        sketch.shape(pShape);
         sketch.strokeWeight(1);
         sketch.fill(0, 0, 0);
     }
@@ -74,6 +105,10 @@ public class GameObject {
         Shape thisShape = object1.shape;
         Shape thatShape = object2.shape;
 
+        if(object1.isStatic() && object2.isStatic()) {
+            return null;
+        }
+
         Vector object1PositionDiff = this.physicsObject.position.subtractN(thisShape.centerPoint());
         Vector object2PositionDiff = object2.physicsObject.position.subtractN(thatShape.centerPoint());
 
@@ -94,21 +129,24 @@ public class GameObject {
             CollisionManifoldData collisionManifold = clippingPoints.getCollisionManifold(shape1, shape2, epa.normal);
 
 
-            if (collisionManifold.getPoints().size() > 0) {
+            if (collisionManifold != null && collisionManifold.getPoints().size() > 0) {
 
                 collisionManifold.addNormal(epa.normal);
-//                System.out.println(epa.type);
+
                 collisionManifold.addDepth(epa.depth);
-                System.out.println(epa.depth);
 
 
-                sketch.stroke(0, 255, 0);
-                sketch.line(collisionManifold.getPoints().get(0), collisionManifold.getPoints().get(0).addN(epa.normal.multiplyN(100)));
-                sketch.stroke(0, 0, 0);
+//                sketch.stroke(0, 255, 0);
+//                sketch.line(collisionManifold.getPoints().get(0), collisionManifold.getPoints().get(0).addN(epa.normal.multiplyN(100)));
+//                sketch.stroke(0, 0, 0);
                 return collisionManifold;
             }
         }
         return null;
+    }
+
+    private boolean isStatic() {
+        return physicsObject.mass == 0.0;
     }
 
     public void addForce(String id, Vector vector) {

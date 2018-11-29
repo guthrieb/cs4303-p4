@@ -7,9 +7,8 @@ import java.util.List;
 
 public class PhysicsCollider {
     private static final double ELASTICITY = 0.2;
-    GameObject gameObject1;
-    GameObject gameObject2;
-
+    private GameObject gameObject1;
+    private GameObject gameObject2;
 
 
     public PhysicsCollider(GameObject object1, GameObject object2) {
@@ -17,18 +16,6 @@ public class PhysicsCollider {
         this.gameObject2 = object2;
     }
 
-    private Vector getRv(Vector rb, Vector ra, Vector velocity1, Vector velocity2, double angularVelocity1, double angularVelocity2) {
-        Vector result = velocity2.copy();
-
-        Vector cross1 = Vector.cross(angularVelocity2, rb, new Vector(0, 0));
-        result.add(cross1);
-
-        result.subtract(velocity1);
-        Vector cross2 = Vector.cross(angularVelocity1, ra, new Vector(0, 0));
-        result.subtract(cross2);
-
-        return result;
-    }
 
     public void collide(List<Vector> pointsOfCollision, Vector normalOfCollision) {
         for (int i = 0; i < pointsOfCollision.size(); ++i) {
@@ -43,9 +30,9 @@ public class PhysicsCollider {
                     .subtract(Vector.cross(gameObject1.physicsObject.angularVelocity, radiusVector1));
 
 
-            double contactVel = Vector.dot(relativeVelocity, normalOfCollision);
+            double contactVelocity = Vector.dot(relativeVelocity, normalOfCollision);
 
-            if (contactVel > 0) {
+            if (contactVelocity > 0) {
                 return;
             }
             double raCrossN = Vector.cross(radiusVector1, normalOfCollision);
@@ -55,14 +42,18 @@ public class PhysicsCollider {
                     + (raCrossN * raCrossN) * gameObject1.physicsObject.invInertia
                     + (rbCrossN * rbCrossN) * gameObject2.physicsObject.invInertia;
 
-            double j = -(1.0f + 0.0) * contactVel;
+            double j = -(1.0f + 0.0) * contactVelocity;
             j /= invMassSum;
             j /= pointsOfCollision.size();
 
             Vector impulse = normalOfCollision.multiplyN(j);
 
             gameObject1.applyImpulse(impulse.negateN(), radiusVector1);
+            gameObject1.physicsObject.getImpulseCollisions().add(contactVelocity);
             gameObject2.applyImpulse(impulse, radiusVector2);
+            gameObject2.physicsObject.getImpulseCollisions().add(contactVelocity);
+
+//            System.out.println(gameObject1.physicsObject.impulseCollisions);
         }
     }
 }

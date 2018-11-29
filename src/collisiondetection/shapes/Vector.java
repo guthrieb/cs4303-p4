@@ -28,6 +28,8 @@ public class Vector {
     }
 
     public static double dot(Vector v1, Vector v2) {
+        //V1 = ((cx - x1),(cy - y1)
+        //V2 = ((x2 - x1),(y2 - y1)
         return v1.x * v2.x + v1.y * v2.y;
     }
 
