@@ -51,6 +51,7 @@ public class PhysicsObject {
         }
         this.orientation = 0;
         this.mg = PhysicsLoop.GRAVITY.multiplyN(mass);
+        this.elasticity = 0;
     }
 
     public PhysicsObject(Shape shape, Vector position, double mass, double momentOfInertia, boolean damageable) {

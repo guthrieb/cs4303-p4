@@ -101,7 +101,7 @@ public class CollisionManifoldData {
                 '}';
     }
 
-    public void positionalCorrection() {
+    public void translatePosition() {
         double correction = Math.max(depth - TOLERANCE, 0.0)/ (object1.physicsObject.invMass + object2.physicsObject.invMass) * 0.4;
 
         object1.physicsObject.position.adds(collisionNormal, -object1.physicsObject.invMass * correction);

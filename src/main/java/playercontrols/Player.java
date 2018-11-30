@@ -29,6 +29,7 @@ public class Player extends GameObject {
     private static final int TIME_BEFORE_DROP = 500;
     private static final double DAMAGE_SPEED_LIMIT = 400;
     private static final int TETHER_LENGTH = 500;
+    private static final String DESTROYED_KEY = "destroyed_sound";
     public LaserMode firingMode = LaserMode.shotgunLasers();
 
 
@@ -48,6 +49,7 @@ public class Player extends GameObject {
 
     private int maxHealth = 1000;
     private int remainingHealth = 1000;
+    private boolean dead = false;
 
 
     public void setRotating(RotationDirection direction) {
@@ -78,6 +80,22 @@ public class Player extends GameObject {
 
     }
 
+    public boolean dead() {
+        return dead;
+    }
+
+    public void destroy() {
+        sketch.playerHashMap.get(Sketch.DESTROYED_KEY).play();
+        sketch.playerHashMap.get(Sketch.DESTROYED_KEY).rewind();
+
+        remainingHealth = 0;
+        lineColour = fillColour;
+        fillColour = new Colour(0, 0, 0);
+        boosting = false;
+        currentRotation = RotationDirection.NO_ROTATION;
+        this.dead = true;
+    }
+
 
     public enum RotationDirection {
         LEFT, RIGHT, NO_ROTATION
@@ -92,15 +110,16 @@ public class Player extends GameObject {
         MOVEMENT, DROPPER, TETHER
     }
 
-    public void addTether(TetherDirection direction, List<GameObject> tetherableObject) {
+    public void addTether(TetherDirection direction, List<GameObject> objects) {
 
         double tetherOrientation;
         if (direction == TetherDirection.LEFT) {
             tetherOrientation = physicsObject.orientation - Math.PI / 2;
-
         } else {
             tetherOrientation = physicsObject.orientation + Math.PI / 2;
         }
+
+
         double tetherDirectionX = Math.cos(tetherOrientation);
         double tetherDirectionY = Math.sin(tetherOrientation);
 
@@ -109,8 +128,8 @@ public class Player extends GameObject {
         double closestIntersectionDist = Double.MAX_VALUE;
         Vector closestIntersection = null;
         GameObject closestIntersectingObject = null;
-        for (GameObject object : tetherableObject) {
-            if (!object.equals(this)) {
+        for (GameObject object : objects) {
+            if (!object.equals(this) && object.tetherable()) {
                 boolean intersected = LineMath.objectIntersected(this.physicsObject.position, tetherDirection, object);
 
 
@@ -143,7 +162,7 @@ public class Player extends GameObject {
         physicsObject.addForce("", physicsObject.mg, physicsObject.position, false);
 
         if (mode == Mode.MOVEMENT) {
-            updatePlayer(objects);
+            updateMovementMode(objects);
         } else if (mode == Mode.TETHER) {
             updateTetherMode();
         } else if (mode == Mode.DROPPER) {
@@ -152,7 +171,7 @@ public class Player extends GameObject {
     }
 
     private void updateDropperMode() {
-        analyseDamages();
+        analyseDamages(1);
         if (timers.get(DROPPER_PAUSE).completed()) {
             physicsObject.addForce("dropping_force", new Vector(0, DROP_FORCE), physicsObject.position, false);
             physicsObject.yVelDamping = 1;
@@ -160,11 +179,12 @@ public class Player extends GameObject {
     }
 
     private void updateTetherMode() {
+        analyseDamages(0.4);
         addTetherForce();
     }
 
-    private void updatePlayer(List<GameObject> objects) {
-        analyseDamages();
+    private void updateMovementMode(List<GameObject> objects) {
+        analyseDamages(1);
         addBoostForce();
         addRotationForce();
         handleFiring(objects);
@@ -194,7 +214,7 @@ public class Player extends GameObject {
     }
 
     public Player(String id, Sketch sketch, Shape shape, Vector position, double mass, double momentOfInertia, Colour fillColour, Colour lineColour) {
-        super(id, shape, position, mass, momentOfInertia, true, fillColour, lineColour);
+        super(id, shape, position, mass, momentOfInertia, true, fillColour, lineColour, false);
         this.sketch = sketch;
         addTimers();
     }
@@ -204,12 +224,23 @@ public class Player extends GameObject {
     }
 
 
-    private void analyseDamages() {
+    private void analyseDamages(double mod) {
         for (double contactVelocity : physicsObject.getImpulseCollisions()) {
             double absContactVel = Math.abs(contactVelocity);
             if (absContactVel > DAMAGE_SPEED_LIMIT) {
-                remainingHealth -= (absContactVel - DAMAGE_SPEED_LIMIT) * 0.1;
+                remainingHealth -= ((absContactVel - DAMAGE_SPEED_LIMIT) * 0.1)*mod;
             }
+        }
+
+
+        if(remainingHealth <= 0) {
+            if(remainingHealth < 0) {
+                remainingHealth = 0;
+            }
+            if(!dead) {
+                destroy();
+            }
+
         }
         physicsObject.setImpulseCollisions(new ArrayList<>());
     }
@@ -242,7 +273,7 @@ public class Player extends GameObject {
         this.physicsObject.rotationalDamping = BOOSTER_ROTATIONAL_DAMPING;
         this.physicsObject.linearDamping = BOOSTER_LINEAR_DAMPING;
         physicsObject.resetDirectionalDamping();
-
+        this.physicsObject.elasticity = 0;
         this.mode = Mode.MOVEMENT;
     }
 
@@ -259,8 +290,9 @@ public class Player extends GameObject {
         this.physicsObject.linearDamping = DROPPER_LINEAR_DAMPING;
         this.physicsObject.xVelDamping = 0.9;
         this.physicsObject.yVelDamping = 0.9;
-        timers.get(DROPPER_PAUSE).reset();
+        this.physicsObject.elasticity = 0;
 
+        timers.get(DROPPER_PAUSE).reset();
         this.mode = Mode.DROPPER;
     }
 
@@ -271,7 +303,7 @@ public class Player extends GameObject {
         this.physicsObject.rotationalDamping = TETHER_ROTATIONAL_DAMPING;
         this.physicsObject.linearDamping = TETHER_LINEAR_DAMPING;
         physicsObject.resetDirectionalDamping();
-
+        this.physicsObject.elasticity = 0.5;
 
         tethered = false;
         this.mode = Mode.TETHER;
@@ -338,7 +370,6 @@ public class Player extends GameObject {
         double yComponent = Math.sin(physicsObject.orientation);
 
         Vector firingOrientation = new Vector(xComponent, yComponent);
-        sketch.line(this.physicsObject.position.multiplyN(0.5), this.physicsObject.position.multiplyN(0.5).addN(firingOrientation.multiplyN(100)));
 
         if (firing) {
             if (!firingMode.automatic) {
@@ -435,20 +466,22 @@ public class Player extends GameObject {
 
 
 
-    public void draw(Sketch sketch, double scale, List<GameObject> tetherAbleObjects) {
+    public void draw(Sketch sketch, double scale) {
         super.draw(sketch, scale);
         if (mode == Mode.TETHER) {
-
-
-
             if(tethered) {
+                sketch.stroke(125, 249, 255, 100);
+                sketch.strokeWeight(5);
                 sketch.line(tether.getPosition().multiplyN(scale), physicsObject.position.multiplyN(scale));
+                sketch.strokeWeight(1);
+                sketch.stroke(0, 0, 0);
             } else {
                 double tetherOrientation1;
                 double tetherOrientation2;
 
                 tetherOrientation1 = physicsObject.orientation - Math.PI / 2;
                 tetherOrientation2 = physicsObject.orientation + Math.PI / 2;
+
 
                 double tetherDirectionX1 = Math.cos(tetherOrientation1);
                 double tetherDirectionX2 = Math.cos(tetherOrientation2);
@@ -458,10 +491,11 @@ public class Player extends GameObject {
                 Vector potentialTether1 = new Vector(tetherDirectionX1, tetherDirectionY1).multiplyN(TETHER_LENGTH).addN(physicsObject.position);
                 Vector potentialTether2 = new Vector(tetherDirectionX2, tetherDirectionY2).multiplyN(TETHER_LENGTH).addN(physicsObject.position);
 
-                sketch.stroke(100, 100, 100, 100);
+                sketch.stroke(fillColour.r, fillColour.b, fillColour.g, 255);
                 sketch.line(physicsObject.position.multiplyN(scale), potentialTether1.multiplyN(scale));
                 sketch.line(physicsObject.position.multiplyN(scale), potentialTether2.multiplyN(scale));
                 sketch.stroke(0, 0, 0);
+                sketch.strokeWeight(0);
             }
 
         }

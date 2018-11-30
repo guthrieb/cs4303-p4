@@ -10,7 +10,7 @@ public class HealthPowerUp extends GameObject {
     private boolean used = false;
 
     public HealthPowerUp(String id, Vector position, double mass, double momentOfInertia, int health, Colour fillColour, Colour lineColour) {
-        super(id, new Shape(MapComponentVertices.OCTAGON), position, mass, momentOfInertia, false, fillColour, lineColour);
+        super(id, new Shape(MapComponentVertices.OCTAGON), position, mass, momentOfInertia, false, fillColour, lineColour, false);
         this.health = health;
         this.physicsObject.rotationalDamping = 1;
     }

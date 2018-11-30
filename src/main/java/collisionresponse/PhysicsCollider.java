@@ -42,7 +42,7 @@ public class PhysicsCollider {
                     + (raCrossN * raCrossN) * gameObject1.physicsObject.invInertia
                     + (rbCrossN * rbCrossN) * gameObject2.physicsObject.invInertia;
 
-            double j = -(1.0f + 0.0) * contactVelocity;
+            double j = -(1.0f + Math.max(gameObject1.physicsObject.elasticity, gameObject2.physicsObject.elasticity)) * contactVelocity;
             j /= invMassSum;
             j /= pointsOfCollision.size();
 

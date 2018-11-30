@@ -19,8 +19,9 @@ public class GameObject {
     public String id;
     public Shape shape;
     public collisionresponse.PhysicsObject physicsObject;
+    private boolean tetherable;
     protected Colour fillColour = new Colour(100, 100, 100);
-    Colour lineColour = new Colour(255, 0, 0);
+    protected Colour lineColour = new Colour(255, 0, 0);
 
     @Override
     public boolean equals(Object o) {
@@ -35,12 +36,22 @@ public class GameObject {
         return Objects.hash(id);
     }
 
+    public GameObject(String id, Shape shape, Vector position, double mass, double momentOfInertia, boolean damageable, Colour fillColour, Colour lineColour, boolean tetherable) {
+        this.id = id;
+        this.shape = shape;
+        this.physicsObject = new PhysicsObject(shape, position, mass, momentOfInertia, damageable);
+        this.fillColour = fillColour;
+        this.lineColour = lineColour;
+        this.tetherable = tetherable;
+    }
+
     public GameObject(String id, Shape shape, Vector position, double mass, double momentOfInertia, boolean damageable, Colour fillColour, Colour lineColour) {
         this.id = id;
         this.shape = shape;
         this.physicsObject = new PhysicsObject(shape, position, mass, momentOfInertia, damageable);
         this.fillColour = fillColour;
         this.lineColour = lineColour;
+        this.tetherable = true;
     }
 
     public void applyImpulse(Vector impulse, Vector normal) {
@@ -66,8 +77,8 @@ public class GameObject {
         PShape pShape = sketch.createShape();
         pShape.beginShape();
 
-        pShape.stroke(lineColour.r, lineColour.g, lineColour.b);
-        pShape.fill(fillColour.r, fillColour.g, fillColour.b);
+        pShape.stroke(lineColour.r, lineColour.g, lineColour.b, lineColour.alpha);
+        pShape.fill(fillColour.r, fillColour.g, fillColour.b, fillColour.alpha);
 
 
         for (int i = 0; i < toDraw.length; i++) {
@@ -169,4 +180,7 @@ public class GameObject {
         sketch.line(centerPoint, centerPoint.addN(orientationPoint));
     }
 
+    public boolean tetherable() {
+        return tetherable;
+    }
 }

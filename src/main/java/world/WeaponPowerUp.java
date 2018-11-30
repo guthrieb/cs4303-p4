@@ -10,7 +10,7 @@ public class WeaponPowerUp extends GameObject {
     private LaserMode mode;
 
     public WeaponPowerUp(String id, Vector position, double mass, double momentOfInertia, LaserMode mode, Colour fillColour, Colour lineColour) {
-        super(id, new Shape(MapComponentVertices.SQUARE), position, mass, momentOfInertia, false, fillColour, lineColour);
+        super(id, new Shape(MapComponentVertices.SQUARE), position, mass, momentOfInertia, false, fillColour, lineColour, false);
         this.mode = mode;
         this.physicsObject.rotationalDamping = 0;
     }

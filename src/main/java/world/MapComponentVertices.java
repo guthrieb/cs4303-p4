@@ -21,11 +21,19 @@ public class MapComponentVertices {
             new Vector(-50, 0)
     };
     public static final Vector[] RECTANGLE = new Vector[]{
-            new Vector(- 10, -80),
+            new Vector(-10, -80),
             new Vector(10, -80),
             new Vector(10, 80),
             new Vector(-10, 80)
     };
+
+    public static final Vector[] DESTROYER_BEAM_HORIZONTAL = new Vector[]{
+            new Vector(-2000, -5),
+            new Vector(2000, -5),
+            new Vector(2000, 5),
+            new Vector(-2000, 5)
+    };
+
     public static Vector[] WALL_SHAPE_1 = new Vector[]{
             new Vector(-100, -1500),
             new Vector(100, -1500),
@@ -39,19 +47,19 @@ public class MapComponentVertices {
 //            new Vector(-30, 0)
 //    };
 
-    public static Vector[] WEDGE = new Vector[] {
-            new Vector(-40.0,20.0),
-            new Vector(0.0,-20.0),
-            new Vector(40.0,20.0)
+    public static Vector[] WEDGE = new Vector[]{
+            new Vector(-40.0, 20.0),
+            new Vector(0.0, -20.0),
+            new Vector(40.0, 20.0)
     };
 
-    public static Vector[] WEDGE_2 = new Vector[] {
+    public static Vector[] WEDGE_2 = new Vector[]{
             new Vector(20, 20),
             new Vector(20, -20),
             new Vector(-40, 0)
     };
 
-    public static Vector[] WEDGE_3 = new Vector[] {
+    public static Vector[] WEDGE_3 = new Vector[]{
             new Vector(-2, -1),
             new Vector(0, 1),
             new Vector(2, -1)
@@ -65,14 +73,14 @@ public class MapComponentVertices {
     };
 
     public static Vector[] OCTAGON = new Vector[]{
-            new Vector(-10.0,30.0),
-            new Vector(-30.0,10.0),
-            new Vector(-30.0,-10.0),
-            new Vector(-10.0,-30.0),
-            new Vector(10.0,-30.0),
-            new Vector(30.0,-10.0),
-            new Vector(30.0,10.0),
-            new Vector(10.0,30.0),
+            new Vector(-10.0, 30.0),
+            new Vector(-30.0, 10.0),
+            new Vector(-30.0, -10.0),
+            new Vector(-10.0, -30.0),
+            new Vector(10.0, -30.0),
+            new Vector(30.0, -10.0),
+            new Vector(30.0, 10.0),
+            new Vector(10.0, 30.0),
     };
 
     public static Vector[] scale(Vector[] toScale, double scale) {

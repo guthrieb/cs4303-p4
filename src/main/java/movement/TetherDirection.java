@@ -1,5 +1,5 @@
 package movement;
 
 public enum TetherDirection {
-    LEFT, RIGHT
+    LEFT, DOWN, UP, RIGHT
 }

@@ -5,6 +5,7 @@ import collisiondetection.epa.MinimumTranslationVector;
 import collisiondetection.epa.SeparatingAxis;
 import collisiondetection.shapes.Vector;
 import drawing.Sketch;
+import gameobjects.DestroyerBeam;
 import gameobjects.GameObject;
 import world.HealthPowerUp;
 import playercontrols.Player;
@@ -53,8 +54,15 @@ public class PhysicsLoop {
                     } else if (a instanceof Player && b instanceof HealthPowerUp) {
                         sketch.addPowerUpInteractions((Player)a, (HealthPowerUp)b);
                         objectsToRemove.add(b);
-
-                    } else {
+                    } else if (a instanceof DestroyerBeam && b instanceof Player) {
+                        ((Player)b).destroy();
+                    } else if (a instanceof Player && b instanceof DestroyerBeam) {
+                        ((Player)a).destroy();
+                    } else if (a instanceof DestroyerBeam && (b instanceof HealthPowerUp || b instanceof WeaponPowerUp)){
+                        objectsToRemove.add(b);
+                    } else if ((a instanceof HealthPowerUp || a instanceof WeaponPowerUp) && (b instanceof DestroyerBeam))  {
+                        objectsToRemove.add(a);
+                    }else {
                         CollisionManifoldData manifoldData = a.tryCollision(sketch, b);
                         if(manifoldData != null && manifoldData.getPoints().size() > 0) {
                             collisions.add(manifoldData);
@@ -68,22 +76,19 @@ public class PhysicsLoop {
 
 
         for (GameObject object : objects) {
-
-
-
             object.physicsObject.addForce("",object.physicsObject.mg, object.physicsObject.position, false);
 
-            integrateForces(object, deltaTime);
+            calculateForces(object, deltaTime);
         }
 
         applyImpulses();
 
         for (GameObject object : objects) {
-            integrateVelocity(object, deltaTime);
+            calculateVelocities(object, deltaTime);
         }
 
         for (CollisionManifoldData collision : collisions) {
-            collision.positionalCorrection();
+            collision.translatePosition();
         }
 
         ListIterator<GameObject> objectListIterator = objects.listIterator();
@@ -93,7 +98,6 @@ public class PhysicsLoop {
                 objectListIterator.remove();
             } else {
                 object.resetForcesAndTorques();
-
 
                 if(object.physicsObject.velocity.mag() > object.physicsObject.terminalVelocity) {
                     object.physicsObject.velocity.multiply(0.9);
@@ -113,7 +117,7 @@ public class PhysicsLoop {
         }
     }
 
-    private void integrateVelocity(GameObject gameObject, double dt) {
+    private void calculateVelocities(GameObject gameObject, double dt) {
         PhysicsObject physicsObject = gameObject.physicsObject;
 
         if(physicsObject.invMass == 0) {
@@ -130,10 +134,10 @@ public class PhysicsLoop {
         physicsObject.velocity.x *= physicsObject.xVelDamping;
         physicsObject.velocity.y *= physicsObject.yVelDamping;
 
-        integrateForces(gameObject, dt);
+        calculateForces(gameObject, dt);
     }
 
-    private void integrateForces(GameObject gameObject, double dt) {
+    private void calculateForces(GameObject gameObject, double dt) {
 
         double dts = dt*0.5;
         PhysicsObject physicsObject = gameObject.physicsObject;

@@ -39,6 +39,7 @@ public class PlayerShapes {
             new Vector(10, -10),
             new Vector(15, -10),
             new Vector(25, 5),
+            new Vector(40, 0),
             new Vector(25, -5),
             new Vector(15, 10),
             new Vector(10, 10),

@@ -6,16 +6,20 @@ import collisiondetection.shapes.Vector;
 import collisionresponse.PhysicsLoop;
 import ddf.minim.AudioPlayer;
 import ddf.minim.Minim;
+import drawing.menu.InvalidPageException;
+import drawing.menu.Menu;
+import drawing.menu.MenuFactory;
 import gameobjects.GameObject;
+import movement.TetherDirection;
 import playercontrols.Laser;
 import playercontrols.LaserMode;
 import playercontrols.Player;
 import playercontrols.PlayerShapes;
+import processing.core.PApplet;
+import processing.core.PImage;
 import world.GameMap;
 import world.HealthPowerUp;
 import world.Maps;
-import movement.TetherDirection;
-import processing.core.PApplet;
 import world.WeaponPowerUp;
 
 import java.util.*;
@@ -35,6 +39,8 @@ public class Sketch extends PApplet {
     public static final String MEGALASER_KEY = "megalaser";
     public static final String SHOTGUN_KEY = "shotgun";
     public static final String MACHINE_GUN_KEY = "machine_gun";
+    public static final String DESTROYED_KEY = "destroyed";
+    PImage background;
     private static int healthPackNo = 0;
     private static int weaponPackNo = 0;
     public static int noOfPowerups = 0;
@@ -44,22 +50,60 @@ public class Sketch extends PApplet {
             new Colour(0, 200, 0)
     ));
 
-    private PhysicsLoop physicsLoop;
-    private List<Player> players = new ArrayList<>();
-    public List<Laser> lasers = new ArrayList<>();
 
     private static final int NUMPAD_6 = 227;
     private static final int NUMPAD_4 = 226;
     private static final int NUMPAD_8 = 224;
 
     private GameUI gameUI;
+    private Menu menu;
+    private Player winningPlayer;
+    public GameState state = GameState.MENU;
+
+    public HashMap<String, AudioPlayer> playerHashMap = new HashMap<>();
+    private List<Vector> spawnLocations = new ArrayList<>();
+    private PhysicsLoop physicsLoop;
+    private List<Player> players = new ArrayList<>();
+    public List<Laser> lasers = new ArrayList<>();
+
+    private List<String> maps = new ArrayList<>(Arrays.asList("map1", "map2", "map3", "map4"));
+    private int currentMap = 0;
+    private boolean floored = true;
 
     public static void main(String[] args) {
         PApplet.main("drawing.Sketch");
     }
 
-    public HashMap<String, AudioPlayer> playerHashMap = new HashMap<>();
-    private List<Vector> spawnLocations = new ArrayList<>();
+    public void nextMap() {
+        currentMap++;
+        if (currentMap >= maps.size()) {
+            currentMap = 0;
+        }
+        initialiseMap(maps.get(currentMap), floored, false);
+    }
+
+    public void updateMapText() {
+        menu.updateMenuEntry(maps.get(currentMap), "main_menu", "select_map");
+    }
+
+    public void changeFloor() {
+        floored = !floored;
+        physicsLoop.objects = new ArrayList<>();
+        initialiseMap(maps.get(currentMap), floored, false);
+    }
+
+    public void updateFloorText() {
+        menu.updateMenuEntry(floored ? "Floor: On" : "Floor: Off", "main_menu", "floored_select");
+    }
+
+    public void beginPlay() {
+        initialiseMap(maps.get(currentMap), floored, true);
+        state = GameState.PLAYING;
+    }
+
+    public enum GameState {
+        MENU, GAME_OVER, PLAYING
+    }
 
 
     @Override
@@ -70,46 +114,59 @@ public class Sketch extends PApplet {
         playerHashMap.put(SHOTGUN_KEY, minim.loadFile("audio/shotgun_laser.wav"));
         playerHashMap.put(REGULARLASER_KEY, minim.loadFile("audio/regular_laser.wav"));
         playerHashMap.put(MACHINE_GUN_KEY, minim.loadFile("audio/machine_gun_zap.mp3"));
-        AudioPlayer music = minim.loadFile("audio/funk_floor.mp3");
-        music.loop();
+        playerHashMap.put(DESTROYED_KEY, minim.loadFile("audio/destroyed.mp3"));
+        this.background = loadImage("img/background.jpg");
+//        AudioPlayer music = minim.loadFile("audio/funk_floor.mp3");
+//        music.loop();
         super.setup();
+
+        physicsLoop = new PhysicsLoop(new ArrayList<>(), 10, DT, this);
+        this.gameUI = new GameUI(this);
+        this.menu = new MenuFactory(this).getMenu();
+        initialiseMap(maps.get(currentMap), floored, false);
     }
 
     public void settings() {
         fullScreen();
-        buildShapes();
-
     }
 
-    private void buildShapes() {
-        physicsLoop = new PhysicsLoop(new ArrayList<>(), 10, DT, this);
-        this.gameUI = new GameUI(this);
-
-        initialiseMap("map2", true);
-    }
-
-    private void initialiseMap(String mapName, boolean floored) {
+    private void initialiseMap(String mapName, boolean floored, boolean spawnPlayers) {
         GameMap gameMap = Maps.getLayout(floored, mapName);
         spawnLocations = gameMap.getPowerUpSpawns();
 
+        players = new ArrayList<>();
+
+        physicsLoop.objects = new ArrayList<>();
         physicsLoop.objects = gameMap.getWorldObjects();
-        int playerNo = 0;
-        List<Vector> playerSpawns = gameMap.getPlayerSpawns();
-        for (int i = 0; i < playerSpawns.size(); i++) {
-            Vector playersSpawn = playerSpawns.get(i);
-            Shape playerShape1 = new Shape(PlayerShapes.BOOSTING_VERTICES);
-            playerNo++;
-            Player newPlayer = new Player("p" + playerNo, this, playerShape1, playersSpawn, PLAYER_MASS,
-                    PLAYER_MOMENT_INERTIA, colours.get(i), new Colour(0, 0, 0));
-            players.add(newPlayer);
-            physicsLoop.objects.add(newPlayer);
+
+        if (spawnPlayers) {
+            int playerNo = 0;
+            List<Vector> playerSpawns = gameMap.getPlayerSpawns();
+            for (int i = 0; i < playerSpawns.size(); i++) {
+                Vector playersSpawn = playerSpawns.get(i);
+                Shape playerShape1 = new Shape(PlayerShapes.BOOSTING_VERTICES);
+                playerNo++;
+                Player newPlayer = new Player("p" + playerNo, this, playerShape1, playersSpawn, PLAYER_MASS,
+                        PLAYER_MOMENT_INERTIA, colours.get(i), new Colour(0, 0, 0));
+                players.add(newPlayer);
+                physicsLoop.objects.add(newPlayer);
+            }
         }
     }
 
     public void keyPressed() {
-        player1Controls();
+        System.out.println(state.toString());
+        if (state == GameState.PLAYING) {
+            player1Controls();
 
-        player2Controls();
+            player2Controls();
+        }
+    }
+
+    public void mousePressed() {
+        if (state == GameState.MENU) {
+            menu.handleClick();
+        }
     }
 
     private void player2Controls() {
@@ -126,7 +183,7 @@ public class Sketch extends PApplet {
             if (keyCode == NUMPAD_4) {
                 player.setRotating(Player.RotationDirection.LEFT);
             }
-            if(keyCode == ENTER) {
+            if (keyCode == ENTER) {
                 player.setFiring(true);
             }
         } else if (player.getMode() == Player.Mode.TETHER) {
@@ -164,7 +221,7 @@ public class Sketch extends PApplet {
             if (key == 'a') {
                 player.setRotating(Player.RotationDirection.LEFT);
             }
-            if(key == ' ') {
+            if (key == ' ') {
                 player.setFiring(true);
             }
         } else if (playerMode == Player.Mode.TETHER) {
@@ -172,75 +229,119 @@ public class Sketch extends PApplet {
                 player.addTether(TetherDirection.LEFT, physicsLoop.objects);
             } else if (key == 'd') {
                 player.addTether(TetherDirection.RIGHT, physicsLoop.objects);
+            } else if (key == 'w') {
+                player.addTether(TetherDirection.UP, physicsLoop.objects);
+            } else if (key == 's') {
+                player.addTether(TetherDirection.DOWN, physicsLoop.objects);
             }
         }
 
-        if (key == '1') {
+        if (key == 'c') {
             player.changeMode(Player.Mode.MOVEMENT);
         }
-        if (key == '2') {
+        if (key == 'v') {
             player.changeMode(Player.Mode.TETHER);
         }
-        if (key == '3') {
+        if (key == 'b') {
             player.changeMode(Player.Mode.DROPPER);
         }
     }
 
     public void keyReleased() {
-        if (key == 'w') {
-            players.get(0).setBoosting(false);
-        }
-        if (key == 'a' || key == 'd') {
-            players.get(0).setRotating(Player.RotationDirection.NO_ROTATION);
-        }
+        if (state == GameState.PLAYING) {
+            if (key == 'w') {
+                players.get(0).setBoosting(false);
+            }
+            if (key == 'a' || key == 'd') {
+                players.get(0).setRotating(Player.RotationDirection.NO_ROTATION);
+            }
 
-        if(key == ' ') {
-            players.get(0).setFiring(false);
-        }
+            if (key == ' ') {
+                players.get(0).setFiring(false);
+            }
 
-        if(keyCode == ENTER) {
-            players.get(1).setFiring(false);
-        }
+            if (keyCode == ENTER) {
+                players.get(1).setFiring(false);
+            }
 
 
-        if (keyCode == NUMPAD_8) {
-            players.get(1).setBoosting(false);
+            if (keyCode == NUMPAD_8) {
+                players.get(1).setBoosting(false);
 
-        }
-        if (keyCode == NUMPAD_6 || keyCode == NUMPAD_4) {
-            players.get(1).setRotating(Player.RotationDirection.NO_ROTATION);
+            }
+            if (keyCode == NUMPAD_6 || keyCode == NUMPAD_4) {
+                players.get(1).setRotating(Player.RotationDirection.NO_ROTATION);
+            }
         }
     }
 
     public void draw() {
-
         background(200, 200, 200);
+        background(background);
+        if (state == GameState.MENU) {
+            System.out.println(physicsLoop.objects.size());
+            for (GameObject object : physicsLoop.objects) {
+                object.draw(this, 0.5);
+            }
+            drawMenu();
+        } else {
 
-        text(Float.toString(frameRate), width/2f, height/2f);
 
-        spawnPowerups();
+            text(Float.toString(frameRate), width / 2f, height / 2f);
+
+            spawnPowerups();
 
 
-        for (GameObject object : physicsLoop.objects) {
-            object.draw(this, SCALE);
-        }
-        for (Player player : players) {
-            player.update(physicsLoop.objects);
-            player.draw(this, SCALE, physicsLoop.objects);
-        }
+            for (GameObject object : physicsLoop.objects) {
+                if (!(object instanceof Player)) {
+                    object.draw(this, SCALE);
+                }
+            }
+            for (Player player : players) {
+                player.update(physicsLoop.objects);
+                player.draw(this, SCALE);
+            }
 
-        ListIterator<Laser> iterator = lasers.listIterator();
-        while(iterator.hasNext()) {
-            Laser laser = iterator.next();
+            ListIterator<Laser> iterator = lasers.listIterator();
+            while (iterator.hasNext()) {
+                Laser laser = iterator.next();
 
-            laser.draw(this, SCALE);
-            if(laser.isFaded()) {
-                iterator.remove();
+                laser.draw(this, SCALE);
+                if (laser.isFaded()) {
+                    iterator.remove();
+                }
+            }
+
+            gameUI.draw(players);
+            physicsLoop.step();
+
+            if (gameOver()) {
+                state = GameState.GAME_OVER;
             }
         }
+    }
 
-        gameUI.draw(players);
-        physicsLoop.step();
+    private boolean gameOver() {
+        int alivePlayers = 0;
+        Player alivePlayer = null;
+        for (Player player : players) {
+            if (!player.dead()) {
+                alivePlayers++;
+            }
+            if (alivePlayers > 1) {
+                return false;
+            }
+        }
+        this.winningPlayer = alivePlayer;
+        return true;
+    }
+
+    private void drawMenu() {
+        try {
+            this.menu.draw();
+        } catch (InvalidPageException e) {
+            e.printStackTrace();
+        }
     }
 
     private void spawnPowerups() {
@@ -248,16 +349,14 @@ public class Sketch extends PApplet {
 
         int i = random.nextInt(1000);
 
-
-        if(noOfPowerups < 3 && i == 0) {
+        if (noOfPowerups < 3 && i == 0) {
             noOfPowerups++;
             int spawnLocationIndex = random.nextInt(spawnLocations.size());
             Vector vector = spawnLocations.get(spawnLocationIndex);
             int powerUpType = random.nextInt(2);
 
 
-
-            if(powerUpType == 0) {
+            if (powerUpType == 0) {
                 addWeaponPowerup(random, vector);
             } else {
                 physicsLoop.objects.add(new HealthPowerUp("health_" + healthPackNo++, vector.copy(), POWERUP_MASS, POWERUP_MOMENT_INERTIA,
@@ -270,13 +369,13 @@ public class Sketch extends PApplet {
     private void addWeaponPowerup(Random random, Vector vector) {
         int laserType = random.nextInt(4);
 
-        if(laserType == 0) {
+        if (laserType == 0) {
             physicsLoop.objects.add(new WeaponPowerUp("powerup_" + weaponPackNo++, vector.copy(), POWERUP_MASS, POWERUP_MOMENT_INERTIA,
                     LaserMode.standardLaserMode(), WEAPON_FILL_COLOUR, WEAPON_LINE_COLOUR));
         } else if (laserType == 1) {
             physicsLoop.objects.add(new WeaponPowerUp("powerup_" + weaponPackNo++, vector.copy(), POWERUP_MASS, POWERUP_MOMENT_INERTIA,
                     LaserMode.shotgunLasers(), WEAPON_FILL_COLOUR, WEAPON_LINE_COLOUR));
-        } else if (laserType == 2){
+        } else if (laserType == 2) {
             physicsLoop.objects.add(new WeaponPowerUp("powerup_" + weaponPackNo++, vector.copy(), POWERUP_MASS, POWERUP_MOMENT_INERTIA,
                     LaserMode.megaLaserMode(), WEAPON_FILL_COLOUR, WEAPON_LINE_COLOUR));
         } else if (laserType == 3) {
