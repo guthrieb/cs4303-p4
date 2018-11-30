@@ -1,15 +1,11 @@
-TODO game over options
-
-TODO change tether shape
-
 TODO refactor physics engine !!! PRIORITY !!!
 
-TODO movement trails
+TODO fix clipping issue with powerups
 
-TODO fix clipping issue with polygons
+TODO get correct moment of inertia for powerups
 
-TODO intro countdown
+TODO add more player info???
 
-TODO change colour of powerups
+TODO turn music back on
 
-TODO change player and powerup spawns per level
+TODO change center point dialogue for line method

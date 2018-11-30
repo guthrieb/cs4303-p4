@@ -73,6 +73,8 @@ public class Maps {
                             new Vector(MAP_WIDTH_1 * 6 / 20f, MAP_HEIGHT_1 * 14 / 30f), 0, 0, false, GREY, GREY),
                     new GameObject("object3", new Shape(MapComponentVertices.scale(MapComponentVertices.RECTANGLE, 5)),
                             new Vector(MAP_WIDTH_1 * 15 / 20f, MAP_HEIGHT_1 * 26 / 30f), 0, 0, false, GREY, GREY),
+                    new GameObject("object3", new Shape(MapComponentVertices.scale(MapComponentVertices.OCTAGON, 5)),
+                            new Vector(MAP_WIDTH_1 * 15 / 20f, MAP_HEIGHT_1 * 39 / 40f), 0, 0, false, GREY, GREY),
                     new GameObject("object4", new Shape(MapComponentVertices.scale(MapComponentVertices.SQUARE, 5)),
                             new Vector(MAP_WIDTH_1 * 14 / 20f, MAP_HEIGHT_1 * 5 / 30f), 0, 0, false, GREY, GREY),
                     new GameObject("object5", new Shape(MapComponentVertices.scale(MapComponentVertices.WEDGE, 1)),
@@ -111,16 +113,13 @@ public class Maps {
                             new Vector(MAP_WIDTH_1 * 4 / 7, 200),
                             new Vector(MAP_WIDTH_1 * 5 / 7, 200),
                             new Vector(MAP_WIDTH_1 * 6 / 7, 200),
-                            new Vector(MAP_WIDTH_1 / 2, MAP_HEIGHT_1 * 2 / 4f),
                             new Vector(MAP_WIDTH_1 * 2 / 7, MAP_HEIGHT_1 * 2 / 4f),
-                            new Vector(MAP_WIDTH_1 * 3 / 7, MAP_HEIGHT_1 * 2 / 4f),
-                            new Vector(MAP_WIDTH_1 * 4 / 7, MAP_HEIGHT_1 * 2 / 4f),
                             new Vector(MAP_WIDTH_1 * 5 / 7, MAP_HEIGHT_1 * 2 / 4f),
                             new Vector(MAP_WIDTH_1 * 6 / 7, MAP_HEIGHT_1 * 2 / 4f)
                     )
             ));
     public static GameMap gameMap2 = new GameMap(obstacleLayout2,
-            new ArrayList<>(Arrays.asList(new Vector(MAP_WIDTH_1 / 4, MAP_HEIGHT_1 / 4f), new Vector(MAP_WIDTH_1 * 3 / 4, MAP_HEIGHT_1 / 4f))),
+            new ArrayList<>(Arrays.asList(new Vector(MAP_WIDTH_1 / 4, MAP_HEIGHT_1 / 2f), new Vector(MAP_WIDTH_1 * 3 / 4, MAP_HEIGHT_1*2 / 4f))),
             new ArrayList<>(
                     Arrays.asList(
                             new Vector(MAP_WIDTH_1, 200),
@@ -129,7 +128,6 @@ public class Maps {
                             new Vector(MAP_WIDTH_1 * 4 / 7, 200),
                             new Vector(MAP_WIDTH_1 * 5 / 7, 200),
                             new Vector(MAP_WIDTH_1 * 6 / 7, 200),
-                            new Vector(MAP_WIDTH_1 / 2, MAP_HEIGHT_1 * 2 / 4f),
                             new Vector(MAP_WIDTH_1 * 2 / 7, MAP_HEIGHT_1 * 2 / 4f),
                             new Vector(MAP_WIDTH_1 * 3 / 7, MAP_HEIGHT_1 * 2 / 4f),
                             new Vector(MAP_WIDTH_1 * 4 / 7, MAP_HEIGHT_1 * 2 / 4f),
@@ -148,10 +146,9 @@ public class Maps {
                             new Vector(MAP_WIDTH_1 * 4 / 7, 200),
                             new Vector(MAP_WIDTH_1 * 5 / 7, 200),
                             new Vector(MAP_WIDTH_1 * 6 / 7, 200),
-                            new Vector(MAP_WIDTH_1 / 2, MAP_HEIGHT_1 * 2 / 4f),
                             new Vector(MAP_WIDTH_1 * 2 / 7, MAP_HEIGHT_1 * 2 / 4f),
-                            new Vector(MAP_WIDTH_1 * 3 / 7, MAP_HEIGHT_1 * 2 / 4f),
-                            new Vector(MAP_WIDTH_1 * 4 / 7, MAP_HEIGHT_1 * 2 / 4f),
+                            new Vector(MAP_WIDTH_1 * 2.5 / 7, MAP_HEIGHT_1 * 2 / 4f),
+                            new Vector(MAP_WIDTH_1 * 4.5 / 7, MAP_HEIGHT_1 * 2 / 4f),
                             new Vector(MAP_WIDTH_1 * 5 / 7, MAP_HEIGHT_1 * 2 / 4f),
                             new Vector(MAP_WIDTH_1 * 6 / 7, MAP_HEIGHT_1 * 2 / 4f)
                     )
@@ -169,8 +166,8 @@ public class Maps {
                             new Vector(MAP_WIDTH_1 * 6 / 7, 200),
                             new Vector(MAP_WIDTH_1 / 2, MAP_HEIGHT_1 * 2 / 4f),
                             new Vector(MAP_WIDTH_1 * 2 / 7, MAP_HEIGHT_1 * 2 / 4f),
-                            new Vector(MAP_WIDTH_1 * 3 / 7, MAP_HEIGHT_1 * 2 / 4f),
-                            new Vector(MAP_WIDTH_1 * 4 / 7, MAP_HEIGHT_1 * 2 / 4f),
+                            new Vector(MAP_WIDTH_1 * 2.5 / 7, MAP_HEIGHT_1 * 2 / 4f),
+                            new Vector(MAP_WIDTH_1 * 4.5 / 7, MAP_HEIGHT_1 * 2 / 4f),
                             new Vector(MAP_WIDTH_1 * 5 / 7, MAP_HEIGHT_1 * 2 / 4f),
                             new Vector(MAP_WIDTH_1 * 6 / 7, MAP_HEIGHT_1 * 2 / 4f)
                     )
@@ -181,11 +178,19 @@ public class Maps {
 
     static final HashMap<String, GameMap> obstacleLayouts = new HashMap<>();
 
+    public static final String MAP_1_NAME = "Map 1";
+
+    public static final String MAP_2_NAME = "Map 2";
+
+    public static final String MAP_3_NAME = "Map 3";
+
+    public static final String MAP_4_NAME = "Map 4";
+
     static {
-        obstacleLayouts.put("map1", gameMap1);
-        obstacleLayouts.put("map2", gameMap2);
-        obstacleLayouts.put("map3", gameMap3);
-        obstacleLayouts.put("map4", gameMap4);
+        obstacleLayouts.put(MAP_1_NAME, gameMap1);
+        obstacleLayouts.put(MAP_2_NAME, gameMap2);
+        obstacleLayouts.put(MAP_3_NAME, gameMap3);
+        obstacleLayouts.put(MAP_4_NAME, gameMap4);
     }
 
     public static GameMap getLayout(boolean floored, String mapName) {

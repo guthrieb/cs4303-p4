@@ -60,20 +60,12 @@ public class ClippingPoints {
     }
 
     private CollisionManifoldData performClipping(Face refFace, Face incFace, boolean flip) {
-//        sketch.stroke(255, 0, 0);
-//        sketch.line(refFace.getV1(), refFace.getV2());
-//        sketch.stroke(0, 0, 255);
-//        sketch.line(incFace.getV1(), incFace.getV2());
-//        sketch.stroke(0, 0, 0);
-
         Vector refVector = refFace.getVector();
         refVector.normalize();
 
         double o1 = Vector.dot(refVector, refFace.getV1());
 
         CollisionManifoldData clip = CollisionManifoldData.clip(incFace.getV1(), incFace.getV2(), refVector, o1);
-
-
 
         List<Vector> clippedPoints = clip.points;
 
@@ -94,10 +86,6 @@ public class ClippingPoints {
         Vector refNorm = refVector.cross(-1);
         refNorm.normalize();
 
-//        if (flip) {
-//            refNorm.negate();
-//        }
-
         double max = Vector.dot(refNorm, refFace.getProjected());
 
         double depth0 = Vector.dot(refNorm, clippedPoints.get(0)) - max;
@@ -113,16 +101,6 @@ public class ClippingPoints {
             clippedPoints.remove(clippedPoints.size() - 1);
 
         }
-
-        drawPoints(clippedPoints);
         return clip;
-    }
-
-    private void drawPoints(List<Vector> clippedPoints) {
-        for(Vector point : clippedPoints) {
-            sketch.stroke(255, 255, 255);
-            sketch.point(point);
-            sketch.stroke(0, 0, 0);
-        }
     }
 }

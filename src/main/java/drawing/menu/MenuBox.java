@@ -36,10 +36,13 @@ public class MenuBox {
             sketch.fill(255, 255, 255, 100);
         }
 
+
+
         sketch.rect((float)screenPos.x, (float)screenPos.y, width, height);
 
         sketch.stroke(0, 0, 0);
         sketch.fill(0, 0, 0);
+        sketch.textSize(40);
         sketch.textAlign(PConstants.CENTER, PConstants.CENTER);
         sketch.text(content, (float)screenPos.x, (float)screenPos.y);
         sketch.stroke(0, 0, 0);

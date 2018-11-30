@@ -2,7 +2,6 @@ package drawing;
 
 
 import collisiondetection.shapes.Shape;
-import collisiondetection.shapes.Simplex;
 import collisiondetection.shapes.Vector;
 import collisionresponse.PhysicsLoop;
 import ddf.minim.AudioPlayer;
@@ -24,7 +23,11 @@ import world.WeaponPowerUp;
 import java.util.*;
 
 public class Sketch extends PApplet {
-    static double DT = 1 / 60.0;
+    private static final String MAP_1_NAME = "map1";
+    private static final String MAP_2_NAME = "map2";
+    private static final String MAP_3_NAME = "map3";
+    private static final String MAP_4_NAME = "map4";
+    private static final double DT = 1 / 60.0;
     public static final double SCALE = 0.5;
     private static final int PLAYER_MASS = 2132;
     private static final int PLAYER_MOMENT_INERTIA = 838101;
@@ -32,17 +35,22 @@ public class Sketch extends PApplet {
     private static final double POWERUP_MASS = 2000;
     private static final Colour HEALTH_FILL_COLOUR = new Colour(255, 255, 255);
     private static final Colour HEALTH_LINE_COLOUR = new Colour(255, 0, 0);
-    private static final Colour WEAPON_FILL_COLOUR = new Colour(0, 0, 0);
+    private static final Colour WEAPON_FILL_COLOUR = new Colour(255, 0, 255);
     private static final Colour WEAPON_LINE_COLOUR = new Colour(255, 0, 0);
     public static final String REGULARLASER_KEY = "regularlaser";
     public static final String MEGALASER_KEY = "megalaser";
     public static final String SHOTGUN_KEY = "shotgun";
     public static final String MACHINE_GUN_KEY = "machine_gun";
     public static final String DESTROYED_KEY = "destroyed";
-    PImage background;
+    public static final int POWERUP_LIMIT = 3;
+    public static final int POWERUP_PROBABILITY = 700;
+    private PImage background;
     private static int healthPackNo = 0;
     private static int weaponPackNo = 0;
     public static int noOfPowerups = 0;
+
+    Timer countDownTimer = new Timer(1000);
+    int countDown = 3;
 
     private List<Colour> colours = new ArrayList<>(Arrays.asList(
             new Colour(200, 0, 0),
@@ -54,12 +62,10 @@ public class Sketch extends PApplet {
     private static final int NUMPAD_4 = 226;
     private static final int NUMPAD_8 = 224;
 
-    Timer dtTimer = new Timer(100);
-
     private GameUI gameUI;
     private Menu menu;
     private Player winningPlayer;
-    public GameState state = GameState.MENU;
+    private GameState state = GameState.MENU;
 
     public HashMap<String, AudioPlayer> playerHashMap = new HashMap<>();
     private List<Vector> spawnLocations = new ArrayList<>();
@@ -67,7 +73,7 @@ public class Sketch extends PApplet {
     private List<Player> players = new ArrayList<>();
     public List<Laser> lasers = new ArrayList<>();
 
-    private List<String> maps = new ArrayList<>(Arrays.asList("map1", "map2", "map3", "map4"));
+    private List<String> maps = new ArrayList<>(Arrays.asList(Maps.MAP_1_NAME, Maps.MAP_2_NAME, Maps.MAP_3_NAME, Maps.MAP_4_NAME));
     private int currentMap = 0;
     private boolean floored = true;
     private List<Trail> trails = new ArrayList<>();
@@ -100,7 +106,8 @@ public class Sketch extends PApplet {
 
     public void beginPlay() {
         initialiseMap(maps.get(currentMap), floored, true);
-        state = GameState.PLAYING;
+        countDownTimer.reset();
+        state = GameState.COUNTDOWN;
     }
 
     public void addTrail(Trail trail) {
@@ -108,7 +115,7 @@ public class Sketch extends PApplet {
     }
 
     public enum GameState {
-        MENU, GAME_OVER, PLAYING
+        MENU, GAME_OVER, PLAYING, COUNTDOWN
     }
 
 
@@ -122,7 +129,7 @@ public class Sketch extends PApplet {
         playerHashMap.put(MACHINE_GUN_KEY, minim.loadFile("audio/machine_gun_zap.mp3"));
         playerHashMap.put(DESTROYED_KEY, minim.loadFile("audio/destroyed.mp3"));
         this.background = loadImage("img/background.jpg");
-//        AudioPlayer music = minim.loadFile("audio/funk_floor.mp3");
+        AudioPlayer music = minim.loadFile("audio/funk_floor.mp3");
 //        music.loop();
         super.setup();
 
@@ -152,8 +159,11 @@ public class Sketch extends PApplet {
                 Vector playersSpawn = playerSpawns.get(i);
                 Shape playerShape1 = new Shape(PlayerShapes.BOOSTING_VERTICES);
                 playerNo++;
-                Player newPlayer = new Player("p" + playerNo, this, playerShape1, playersSpawn, PLAYER_MASS,
+                Player newPlayer = new Player("P" + playerNo, this, playerShape1, playersSpawn.copy(), PLAYER_MASS,
                         PLAYER_MOMENT_INERTIA, colours.get(i), new Colour(0, 0, 0));
+
+                newPlayer.shape.rotate(Math.PI*3/2);
+                newPlayer.physicsObject.orientation = Math.PI*3/2;
                 players.add(newPlayer);
                 physicsLoop.objects.add(newPlayer);
             }
@@ -161,12 +171,34 @@ public class Sketch extends PApplet {
     }
 
     public void keyPressed() {
-        System.out.println(state.toString());
         if (state == GameState.PLAYING) {
             player1Controls();
 
             player2Controls();
+        } else if (state == GameState.GAME_OVER) {
+            gameOverControls();
         }
+    }
+
+    private void gameOverControls() {
+        if(key == 'r') {
+            resetGame();
+            initialiseMap(maps.get(currentMap), floored, true);
+        } else if (key == 'm') {
+            state = GameState.MENU;
+        } else if (key == 'q') {
+            exit();
+        }
+    }
+
+    private void resetGame() {
+        players = new ArrayList<>();
+        winningPlayer = null;
+        physicsLoop.objects = new ArrayList<>();
+        state = GameState.COUNTDOWN;
+        countDownTimer.reset();
+        lasers = new ArrayList<>();
+        trails = new ArrayList<>();
     }
 
     public void mousePressed() {
@@ -284,7 +316,41 @@ public class Sketch extends PApplet {
     public void draw() {
         background(200, 200, 200);
         background(background);
-        if (state == GameState.MENU) {
+        ListIterator<Trail> trailListIterator = trails.listIterator();
+        while (trailListIterator.hasNext()) {
+            Trail trail = trailListIterator.next();
+            trail.update();
+            trail.draw(SCALE);
+            if (trail.complete()) {
+                trailListIterator.remove();
+            }
+        }
+
+        if(state == GameState.COUNTDOWN) {
+            for (GameObject object : physicsLoop.objects) {
+                object.draw(this, 0.5);
+            }
+
+            if(countDownTimer.completed()) {
+                countDown--;
+                countDownTimer.reset();
+                if(countDown < 0) {
+                    state = GameState.PLAYING;
+                }
+            }
+
+            fill(255, 255, 255);
+            if(countDown > 0) {
+                textSize(100);
+                text(countDown, width/2f, height/2f);
+                textSize(20);
+            } else {
+                textSize(100);
+                text("GO", width/2f, height/2f);
+                textSize(20);
+            }
+
+        } else if (state == GameState.MENU) {
             System.out.println(physicsLoop.objects.size());
             for (GameObject object : physicsLoop.objects) {
                 object.draw(this, 0.5);
@@ -295,19 +361,18 @@ public class Sketch extends PApplet {
                 object.draw(this, 0.5);
             }
 
-            textSize( 100);
+            textSize(100);
             Colour playerColour = winningPlayer.playerColour;
             stroke(playerColour.r, playerColour.g, playerColour.b);
             fill(playerColour.r, playerColour.g, playerColour.b);
-            text(winningPlayer.id.toUpperCase() + " WINS", width/2, height/2);
-            textSize( 20);
-            text("Press \"r\" to play again, \"m\" to return to the main menu and \"q\" to quit!", width/2, height*3/5);
-            textSize( 10);
+            text(winningPlayer.id.toUpperCase() + " WINS", width / 2f, height / 2f);
+            textSize(20);
+            text("Press \"r\" to play again, \"m\" to return to the main menu and \"q\" to quit!", width / 2f, height * 3 / 5f);
+            textSize(10);
             physicsLoop.step();
         } else {
-
-
-            text(Float.toString(frameRate), width / 2f, height / 2f);
+            fill(255, 255, 255);
+            System.out.println(frameRate);
 
             spawnPowerups();
 
@@ -337,16 +402,6 @@ public class Sketch extends PApplet {
 
             if (gameOver()) {
                 state = GameState.GAME_OVER;
-            }
-        }
-
-        ListIterator<Trail> trailListIterator = trails.listIterator();
-        while (trailListIterator.hasNext()){
-            Trail trail = trailListIterator.next();
-            trail.update();
-            trail.draw(SCALE);
-            if(trail.complete()) {
-                trailListIterator.remove();
             }
         }
     }
@@ -380,9 +435,9 @@ public class Sketch extends PApplet {
     private void spawnPowerups() {
         Random random = new Random();
 
-        int i = random.nextInt(1000);
+        int i = random.nextInt(POWERUP_PROBABILITY);
 
-        if (noOfPowerups < 3 && i == 0) {
+        if (noOfPowerups < POWERUP_LIMIT && i == 0) {
             noOfPowerups++;
             int spawnLocationIndex = random.nextInt(spawnLocations.size());
             Vector vector = spawnLocations.get(spawnLocationIndex);
@@ -420,7 +475,6 @@ public class Sketch extends PApplet {
     public void point(Vector centerPoint) {
         point(centerPoint.x, centerPoint.y);
     }
-
 
     private void point(double x, double y) {
         strokeWeight(5);

@@ -29,8 +29,7 @@ public class Player extends GameObject {
     private static final int TIME_BEFORE_DROP = 500;
     private static final double DAMAGE_SPEED_LIMIT = 400;
     private static final int TETHER_LENGTH = 500;
-    private static final String DESTROYED_KEY = "destroyed_sound";
-    public LaserMode firingMode = LaserMode.shotgunLasers();
+    public LaserMode firingMode = LaserMode.standardLaserMode();
 
 
     private final Sketch sketch;
@@ -140,7 +139,6 @@ public class Player extends GameObject {
                     intersectingObject.add(centerPoint);
 
                     Vector intersection = LineMath.getClosestIntersection(this.physicsObject.position, tetherDirection, object);
-                    sketch.point(intersection.multiplyN(Sketch.SCALE));
                     Vector thisToIntersection = intersection.subtractN(this.physicsObject.position);
 
                     double mag = thisToIntersection.mag();
@@ -184,17 +182,23 @@ public class Player extends GameObject {
         addTetherForce();
     }
 
+    Timer trailTimer = new Timer(100);
+
     private void updateMovementMode(List<GameObject> objects) {
         analyseDamages(1);
         addBoostForce();
         addRotationForce();
         handleFiring(objects);
 
-        double xComponent = Math.cos(physicsObject.orientation);
-        double yComponent = Math.sin(physicsObject.orientation);
-        Vector orientationVector = new Vector(xComponent, yComponent);
-        orientationVector.normalize();
-        sketch.addTrail(new Trail(this.sketch, this.physicsObject.position.addN(orientationVector.multiplyN(10).negateN()), playerColour));
+        if(boosting && trailTimer.completed()) {
+            double xComponent = Math.cos(physicsObject.orientation);
+            double yComponent = Math.sin(physicsObject.orientation);
+            Vector orientationVector = new Vector(xComponent, yComponent);
+            orientationVector.normalize();
+
+            sketch.addTrail(new Trail(this.sketch, this.physicsObject.position.addN(orientationVector.multiplyN(10).negateN()), playerColour));
+            trailTimer.reset();
+        }
     }
 
     private void addBoostForce() {
@@ -328,8 +332,6 @@ public class Player extends GameObject {
             Vector position = physicsObject.position;
 
             Vector radiusVector = position.subtractN(tether.getPosition());
-
-            sketch.line(tether.getPosition(), tether.getPosition().addN(radiusVector));
 
             Vector perpVector = radiusVector.cross(-1);
 

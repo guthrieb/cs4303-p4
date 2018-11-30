@@ -26,7 +26,8 @@ public class Trail {
 
     public void draw(double scale) {
         sketch.ellipseMode(PConstants.CENTER);
-        sketch.fill(fillColour.r, fillColour.g, fillColour.b, 200);
+        sketch.fill(fillColour.r, fillColour.g, fillColour.b, 100);
+        sketch.fill(255, 255, 255, 100);
         sketch.ellipse((float)position.multiplyN(scale).x, (float)position.multiplyN(scale).y, (float)radius, (float)radius);
     }
 
