@@ -2,6 +2,7 @@ package drawing;
 
 
 import collisiondetection.shapes.Shape;
+import collisiondetection.shapes.Simplex;
 import collisiondetection.shapes.Vector;
 import collisionresponse.PhysicsLoop;
 import ddf.minim.AudioPlayer;
@@ -10,11 +11,9 @@ import drawing.menu.InvalidPageException;
 import drawing.menu.Menu;
 import drawing.menu.MenuFactory;
 import gameobjects.GameObject;
+import helpers.Timer;
 import movement.TetherDirection;
-import playercontrols.Laser;
-import playercontrols.LaserMode;
-import playercontrols.Player;
-import playercontrols.PlayerShapes;
+import playercontrols.*;
 import processing.core.PApplet;
 import processing.core.PImage;
 import world.GameMap;
@@ -25,7 +24,7 @@ import world.WeaponPowerUp;
 import java.util.*;
 
 public class Sketch extends PApplet {
-    private static final double DT = 1 / 60.0;
+    static double DT = 1 / 60.0;
     public static final double SCALE = 0.5;
     private static final int PLAYER_MASS = 2132;
     private static final int PLAYER_MOMENT_INERTIA = 838101;
@@ -55,6 +54,8 @@ public class Sketch extends PApplet {
     private static final int NUMPAD_4 = 226;
     private static final int NUMPAD_8 = 224;
 
+    Timer dtTimer = new Timer(100);
+
     private GameUI gameUI;
     private Menu menu;
     private Player winningPlayer;
@@ -69,6 +70,7 @@ public class Sketch extends PApplet {
     private List<String> maps = new ArrayList<>(Arrays.asList("map1", "map2", "map3", "map4"));
     private int currentMap = 0;
     private boolean floored = true;
+    private List<Trail> trails = new ArrayList<>();
 
     public static void main(String[] args) {
         PApplet.main("drawing.Sketch");
@@ -99,6 +101,10 @@ public class Sketch extends PApplet {
     public void beginPlay() {
         initialiseMap(maps.get(currentMap), floored, true);
         state = GameState.PLAYING;
+    }
+
+    public void addTrail(Trail trail) {
+        this.trails.add(trail);
     }
 
     public enum GameState {
@@ -284,6 +290,20 @@ public class Sketch extends PApplet {
                 object.draw(this, 0.5);
             }
             drawMenu();
+        } else if (state == GameState.GAME_OVER) {
+            for (GameObject object : physicsLoop.objects) {
+                object.draw(this, 0.5);
+            }
+
+            textSize( 100);
+            Colour playerColour = winningPlayer.playerColour;
+            stroke(playerColour.r, playerColour.g, playerColour.b);
+            fill(playerColour.r, playerColour.g, playerColour.b);
+            text(winningPlayer.id.toUpperCase() + " WINS", width/2, height/2);
+            textSize( 20);
+            text("Press \"r\" to play again, \"m\" to return to the main menu and \"q\" to quit!", width/2, height*3/5);
+            textSize( 10);
+            physicsLoop.step();
         } else {
 
 
@@ -319,6 +339,16 @@ public class Sketch extends PApplet {
                 state = GameState.GAME_OVER;
             }
         }
+
+        ListIterator<Trail> trailListIterator = trails.listIterator();
+        while (trailListIterator.hasNext()){
+            Trail trail = trailListIterator.next();
+            trail.update();
+            trail.draw(SCALE);
+            if(trail.complete()) {
+                trailListIterator.remove();
+            }
+        }
     }
 
     private boolean gameOver() {
@@ -327,11 +357,14 @@ public class Sketch extends PApplet {
         for (Player player : players) {
             if (!player.dead()) {
                 alivePlayers++;
+                alivePlayer = player;
             }
             if (alivePlayers > 1) {
                 return false;
             }
         }
+
+        System.out.println("GAME OVER");
         this.winningPlayer = alivePlayer;
         return true;
     }

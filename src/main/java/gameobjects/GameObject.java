@@ -20,7 +20,7 @@ public class GameObject {
     public Shape shape;
     public collisionresponse.PhysicsObject physicsObject;
     private boolean tetherable;
-    protected Colour fillColour = new Colour(100, 100, 100);
+    public Colour fillColour = new Colour(100, 100, 100);
     protected Colour lineColour = new Colour(255, 0, 0);
 
     @Override

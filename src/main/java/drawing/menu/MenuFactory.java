@@ -16,13 +16,11 @@ public class MenuFactory {
         MenuBox playButton = new MenuBox(sketch, "play_game", "Play!",
                 new Vector(sketch.width / 2f, sketch.height / 4f),
                 sketch.width / 6f, sketch.height / 10f,
-                () -> {
-                    sketch.beginPlay();
-                });
+                sketch::beginPlay);
 
         MenuBox mapSelect = new MenuBox(sketch, "select_map", "Map 1",
                 new Vector(sketch.width / 2f, sketch.height * 2 / 4f),
-                sketch.width / 6, sketch.height / 10f,
+                sketch.width / 6f, sketch.height / 10f,
                 () -> {
                     sketch.nextMap();
                     sketch.updateMapText();
@@ -39,6 +37,7 @@ public class MenuFactory {
         menu.addMenuBox("main_menu", playButton);
         menu.addMenuBox("main_menu", mapSelect);
         menu.addMenuBox("main_menu", flooredSelect);
+//        menu.addMenuBox("main_menu", quit);
 
         return menu;
     }

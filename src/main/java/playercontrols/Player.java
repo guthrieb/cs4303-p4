@@ -34,6 +34,7 @@ public class Player extends GameObject {
 
 
     private final Sketch sketch;
+    public Colour playerColour;
 
 
     private boolean firing = false;
@@ -89,7 +90,7 @@ public class Player extends GameObject {
         sketch.playerHashMap.get(Sketch.DESTROYED_KEY).rewind();
 
         remainingHealth = 0;
-        lineColour = fillColour;
+        lineColour = playerColour;
         fillColour = new Colour(0, 0, 0);
         boosting = false;
         currentRotation = RotationDirection.NO_ROTATION;
@@ -188,6 +189,12 @@ public class Player extends GameObject {
         addBoostForce();
         addRotationForce();
         handleFiring(objects);
+
+        double xComponent = Math.cos(physicsObject.orientation);
+        double yComponent = Math.sin(physicsObject.orientation);
+        Vector orientationVector = new Vector(xComponent, yComponent);
+        orientationVector.normalize();
+        sketch.addTrail(new Trail(this.sketch, this.physicsObject.position.addN(orientationVector.multiplyN(10).negateN()), playerColour));
     }
 
     private void addBoostForce() {
@@ -215,6 +222,7 @@ public class Player extends GameObject {
 
     public Player(String id, Sketch sketch, Shape shape, Vector position, double mass, double momentOfInertia, Colour fillColour, Colour lineColour) {
         super(id, shape, position, mass, momentOfInertia, true, fillColour, lineColour, false);
+        this.playerColour = fillColour;
         this.sketch = sketch;
         addTimers();
     }

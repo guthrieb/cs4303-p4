@@ -29,26 +29,35 @@ public class PlayerShapes {
             new Vector(400.0, 0.0)
     };
 
+//    public static Vector[] TETHERED_VERTICES = new Vector[] {
+//            new Vector(-25, -5),
+//            new Vector(-15, -10),
+//            new Vector(-10, -10),
+//            new Vector(-10, -25),
+//            new Vector(0, -25),
+//            new Vector(10, -25),
+//            new Vector(10, -10),
+//            new Vector(15, -10),
+//            new Vector(25, 5),
+//            new Vector(40, 0),
+//            new Vector(25, -5),
+//            new Vector(15, 10),
+//            new Vector(10, 10),
+//            new Vector(10, 25),
+//            new Vector(-0, 25),
+//            new Vector(-10, 25),
+//            new Vector(-10, 10),
+//            new Vector(-15, 10),
+//            new Vector(-25, 5),
+//    };
+
     public static Vector[] TETHERED_VERTICES = new Vector[] {
-            new Vector(-25, -5),
-            new Vector(-15, -10),
-            new Vector(-10, -10),
-            new Vector(-10, -25),
-            new Vector(0, -25),
-            new Vector(10, -25),
-            new Vector(10, -10),
-            new Vector(15, -10),
-            new Vector(25, 5),
+            new Vector(-20, -30),
+            new Vector(20, -30),
             new Vector(40, 0),
-            new Vector(25, -5),
-            new Vector(15, 10),
-            new Vector(10, 10),
-            new Vector(10, 25),
-            new Vector(-0, 25),
-            new Vector(-10, 25),
-            new Vector(-10, 10),
-            new Vector(-15, 10),
-            new Vector(-25, 5),
+            new Vector(20, 30),
+            new Vector(-20, 30),
+
     };
 
     public static Vector[] TETHERED_VERTICES_ADJUST = new Vector[] {

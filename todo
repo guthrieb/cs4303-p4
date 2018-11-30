@@ -1,7 +1,15 @@
-TODO Fix floor menu issue
+TODO game over options
 
-TODO Floorless damage
-
-TODO ending levels
+TODO change tether shape
 
 TODO refactor physics engine !!! PRIORITY !!!
+
+TODO movement trails
+
+TODO fix clipping issue with polygons
+
+TODO intro countdown
+
+TODO change colour of powerups
+
+TODO change player and powerup spawns per level
