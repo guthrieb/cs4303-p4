@@ -86,15 +86,6 @@ public class LineMath {
         int orientation3 = orientation(p2, q2, p1);
         int orientation4 = orientation(p2, q2, q1);
 
-//        System.out.println("line 1 point1: " +p1);
-//        System.out.println("line 1 point2: "+ q1);
-//        System.out.println("line 2 point1: " + p2);
-//        System.out.println("line 2 point2: " +q2);
-////        System.out.println("o1: " + orientation1);
-//        System.out.println("o2: " + orientation2);
-//        System.out.println("o3: " + orientation3);
-//        System.out.println("o4: " + orientation4);
-
         if (orientation1 != orientation2 && orientation3 != orientation4) {
             return true;
         } else if (orientation1 == 0 && onSegment(p1, p2, q1)) {

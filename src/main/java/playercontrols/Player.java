@@ -29,7 +29,7 @@ public class Player extends GameObject {
     private static final int TIME_BEFORE_DROP = 500;
     private static final double DAMAGE_SPEED_LIMIT = 400;
     private static final int TETHER_LENGTH = 500;
-    public LaserMode firingMode = LaserMode.megaLaserMode();
+    public LaserMode firingMode = LaserMode.shotgunLasers();
 
 
     private final Sketch sketch;
@@ -65,15 +65,17 @@ public class Player extends GameObject {
 
     public void collect(WeaponPowerUp powerUp) {
         this.firingMode = powerUp.getMode();
+        Sketch.noOfPowerups--;
     }
 
     public void collect(HealthPowerUp powerUp) {
         this.remainingHealth += powerUp.getHealth();
-        System.out.println(this.remainingHealth);
-//        System.out.println(this.maxHealth);
+
         if (remainingHealth > maxHealth) {
             remainingHealth = maxHealth;
         }
+        Sketch.noOfPowerups--;
+
     }
 
 
@@ -104,14 +106,35 @@ public class Player extends GameObject {
 
         Vector tetherDirection = new Vector(tetherDirectionX, tetherDirectionY);
 
-        LineMath lineMath = new LineMath(tetherDirection.multiplyN(TETHER_LENGTH).mag());
-        Vector position = physicsObject.position;
-        GameObject closestIntersectingObject = lineMath.getClosestIntersectingObject(this,
-                position, position,
-                position.addN(tetherDirection.multiplyN(TETHER_LENGTH)), tetherableObject, true);
+        double closestIntersectionDist = Double.MAX_VALUE;
+        Vector closestIntersection = null;
+        GameObject closestIntersectingObject = null;
+        for (GameObject object : tetherableObject) {
+            if (!object.equals(this)) {
+                boolean intersected = LineMath.objectIntersected(this.physicsObject.position, tetherDirection, object);
+
+
+                if (intersected) {
+
+                    Vector centerPoint = object.physicsObject.position;
+                    intersectingObject.add(centerPoint);
+
+                    Vector intersection = LineMath.getClosestIntersection(this.physicsObject.position, tetherDirection, object);
+                    sketch.point(intersection.multiplyN(Sketch.SCALE));
+                    Vector thisToIntersection = intersection.subtractN(this.physicsObject.position);
+
+                    double mag = thisToIntersection.mag();
+                    if (mag < closestIntersectionDist && mag < TETHER_LENGTH) {
+                        closestIntersectingObject = object;
+                        closestIntersectionDist = mag;
+                        closestIntersection = intersection;
+                    }
+                }
+            }
+        }
 
         if (closestIntersectingObject != null) {
-            attachTether(closestIntersectingObject.physicsObject.position);
+            attachTether(closestIntersection);
         }
     }
 
@@ -319,7 +342,6 @@ public class Player extends GameObject {
 
         if (firing) {
             if (!firingMode.automatic) {
-                System.out.println("Firing off");
                 firing = false;
             }
 
@@ -412,11 +434,36 @@ public class Player extends GameObject {
     }
 
 
-    @Override
-    public void draw(Sketch sketch, double scale) {
+
+    public void draw(Sketch sketch, double scale, List<GameObject> tetherAbleObjects) {
         super.draw(sketch, scale);
-        if (mode == Mode.TETHER && tethered) {
-            sketch.line(tether.getPosition().multiplyN(scale), physicsObject.position.multiplyN(scale));
+        if (mode == Mode.TETHER) {
+
+
+
+            if(tethered) {
+                sketch.line(tether.getPosition().multiplyN(scale), physicsObject.position.multiplyN(scale));
+            } else {
+                double tetherOrientation1;
+                double tetherOrientation2;
+
+                tetherOrientation1 = physicsObject.orientation - Math.PI / 2;
+                tetherOrientation2 = physicsObject.orientation + Math.PI / 2;
+
+                double tetherDirectionX1 = Math.cos(tetherOrientation1);
+                double tetherDirectionX2 = Math.cos(tetherOrientation2);
+                double tetherDirectionY1 = Math.sin(tetherOrientation1);
+                double tetherDirectionY2 = Math.sin(tetherOrientation2);
+
+                Vector potentialTether1 = new Vector(tetherDirectionX1, tetherDirectionY1).multiplyN(TETHER_LENGTH).addN(physicsObject.position);
+                Vector potentialTether2 = new Vector(tetherDirectionX2, tetherDirectionY2).multiplyN(TETHER_LENGTH).addN(physicsObject.position);
+
+                sketch.stroke(100, 100, 100, 100);
+                sketch.line(physicsObject.position.multiplyN(scale), potentialTether1.multiplyN(scale));
+                sketch.line(physicsObject.position.multiplyN(scale), potentialTether2.multiplyN(scale));
+                sketch.stroke(0, 0, 0);
+            }
+
         }
 
         if (collisionOfRay != null) {

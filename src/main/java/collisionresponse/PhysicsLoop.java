@@ -13,13 +13,13 @@ import world.WeaponPowerUp;
 import java.util.*;
 
 public class PhysicsLoop {
-    public static final Vector GRAVITY = new Vector(0, 200);
+    static final Vector GRAVITY = new Vector(0, 100);
     private final Sketch sketch;
-    public List<GameObject> objects;
-    List<CollisionManifoldData> collisions = new ArrayList<>();
     private double deltaTime;
     private int iterations;
-    Set<GameObject> objectsToRemove = new HashSet<>();
+    public List<GameObject> objects;
+    private List<CollisionManifoldData> collisions = new ArrayList<>();
+    private Set<GameObject> objectsToRemove = new HashSet<>();
 
 
     public PhysicsLoop(List<GameObject> objects, int iterations, double dt, Sketch sketch) {
@@ -100,25 +100,9 @@ public class PhysicsLoop {
                 }
             }
         }
-//
-//        for (GameObject object : objects) {
-//            object.resetForcesAndTorques();
-//
-//            System.out.println("orientation: " + object.physicsObject.orientation);
-//            if(object.physicsObject.velocity.mag() > object.physicsObject.terminalVelocity) {
-//                object.physicsObject.velocity.multiply(0.9);
-//            }
-//        }
 
         collisions = new ArrayList<>();
         objectsToRemove = new HashSet<>();
-
-//        for(int i = 0 ; i < objects.size(); i++) {
-//            objects.get(i).shape.moveToPosition(objects.get(i).physicsObject.position);
-//        }
-
-
-
     }
 
     private void applyImpulses() {
@@ -159,10 +143,6 @@ public class PhysicsLoop {
         }
 
         physicsObject.velocity.addsi(physicsObject.calculateTotalForce(), physicsObject.invMass*dts);
-
-//        System.out.println("Before gravity: " + physicsObject.velocity);
-//        physicsObject.velocity.addsi(GRAVITY.multiplyN(gameObject.physicsObject.gravMod), dts);
-//        System.out.println("After gravity: " + physicsObject.velocity);
         double totalTorque = physicsObject.calculateTotalTorque();
         physicsObject.angularVelocity += totalTorque * physicsObject.invInertia * dts;
     }

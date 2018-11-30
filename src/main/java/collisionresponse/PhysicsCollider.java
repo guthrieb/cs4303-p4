@@ -52,8 +52,6 @@ public class PhysicsCollider {
             gameObject1.physicsObject.getImpulseCollisions().add(contactVelocity);
             gameObject2.applyImpulse(impulse, radiusVector2);
             gameObject2.physicsObject.getImpulseCollisions().add(contactVelocity);
-
-//            System.out.println(gameObject1.physicsObject.impulseCollisions);
         }
     }
 }

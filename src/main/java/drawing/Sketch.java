@@ -37,6 +37,7 @@ public class Sketch extends PApplet {
     public static final String MACHINE_GUN_KEY = "machine_gun";
     private static int healthPackNo = 0;
     private static int weaponPackNo = 0;
+    public static int noOfPowerups = 0;
 
     private List<Colour> colours = new ArrayList<>(Arrays.asList(
             new Colour(200, 0, 0),
@@ -219,12 +220,13 @@ public class Sketch extends PApplet {
 
         spawnPowerups();
 
-        for (Player player : players) {
-            player.update(physicsLoop.objects);
-        }
 
         for (GameObject object : physicsLoop.objects) {
             object.draw(this, SCALE);
+        }
+        for (Player player : players) {
+            player.update(physicsLoop.objects);
+            player.draw(this, SCALE, physicsLoop.objects);
         }
 
         ListIterator<Laser> iterator = lasers.listIterator();
@@ -243,10 +245,12 @@ public class Sketch extends PApplet {
 
     private void spawnPowerups() {
         Random random = new Random();
-        int i = random.nextInt(300);
 
-        System.out.println(i);
-        if(i == 0) {
+        int i = random.nextInt(1000);
+
+
+        if(noOfPowerups < 3 && i == 0) {
+            noOfPowerups++;
             int spawnLocationIndex = random.nextInt(spawnLocations.size());
             Vector vector = spawnLocations.get(spawnLocationIndex);
             int powerUpType = random.nextInt(2);
@@ -254,16 +258,31 @@ public class Sketch extends PApplet {
 
 
             if(powerUpType == 0) {
-                System.out.println("SPAWNING POWERUP");
-                physicsLoop.objects.add(new WeaponPowerUp("powerup_" + weaponPackNo++, vector.copy(), POWERUP_MASS, POWERUP_MOMENT_INERTIA,
-                        LaserMode.standardLaserMode(), WEAPON_FILL_COLOUR, WEAPON_LINE_COLOUR));
+                addWeaponPowerup(random, vector);
             } else {
-                System.out.println("SPAWNING HEALTH");
                 physicsLoop.objects.add(new HealthPowerUp("health_" + healthPackNo++, vector.copy(), POWERUP_MASS, POWERUP_MOMENT_INERTIA,
                         100, HEALTH_FILL_COLOUR, HEALTH_LINE_COLOUR));
             }
         }
 
+    }
+
+    private void addWeaponPowerup(Random random, Vector vector) {
+        int laserType = random.nextInt(4);
+
+        if(laserType == 0) {
+            physicsLoop.objects.add(new WeaponPowerUp("powerup_" + weaponPackNo++, vector.copy(), POWERUP_MASS, POWERUP_MOMENT_INERTIA,
+                    LaserMode.standardLaserMode(), WEAPON_FILL_COLOUR, WEAPON_LINE_COLOUR));
+        } else if (laserType == 1) {
+            physicsLoop.objects.add(new WeaponPowerUp("powerup_" + weaponPackNo++, vector.copy(), POWERUP_MASS, POWERUP_MOMENT_INERTIA,
+                    LaserMode.shotgunLasers(), WEAPON_FILL_COLOUR, WEAPON_LINE_COLOUR));
+        } else if (laserType == 2){
+            physicsLoop.objects.add(new WeaponPowerUp("powerup_" + weaponPackNo++, vector.copy(), POWERUP_MASS, POWERUP_MOMENT_INERTIA,
+                    LaserMode.megaLaserMode(), WEAPON_FILL_COLOUR, WEAPON_LINE_COLOUR));
+        } else if (laserType == 3) {
+            physicsLoop.objects.add(new WeaponPowerUp("powerup_" + weaponPackNo++, vector.copy(), POWERUP_MASS, POWERUP_MOMENT_INERTIA,
+                    LaserMode.machineGunLasers(), WEAPON_FILL_COLOUR, WEAPON_LINE_COLOUR));
+        }
     }
 
     public void point(Vector centerPoint) {
