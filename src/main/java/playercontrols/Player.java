@@ -29,6 +29,9 @@ public class Player extends GameObject {
     private static final int TIME_BEFORE_DROP = 500;
     private static final double DAMAGE_SPEED_LIMIT = 400;
     private static final int TETHER_LENGTH = 500;
+    private static final int BOOSTER_MASS = 2132;
+    private static final int BOOSTER_MOMENT_INERTIA = 838101;
+
     public LaserMode firingMode = LaserMode.standardLaserMode();
 
 
@@ -190,6 +193,7 @@ public class Player extends GameObject {
         addRotationForce();
         handleFiring(objects);
 
+
         if(boosting && trailTimer.completed()) {
             double xComponent = Math.cos(physicsObject.orientation);
             double yComponent = Math.sin(physicsObject.orientation);
@@ -281,6 +285,8 @@ public class Player extends GameObject {
 
         this.shape = new Shape(PlayerShapes.BOOSTING_VERTICES);
         this.shape.rotate(physicsObject.orientation);
+        physicsObject.invMass = 1.0/ BOOSTER_MASS;
+        physicsObject.invInertia = 1.0/ BOOSTER_MOMENT_INERTIA;
 
         this.physicsObject.rotationalDamping = BOOSTER_ROTATIONAL_DAMPING;
         this.physicsObject.linearDamping = BOOSTER_LINEAR_DAMPING;
@@ -311,6 +317,8 @@ public class Player extends GameObject {
     private void changeToTether() {
         this.shape = new Shape(PlayerShapes.TETHERED_VERTICES);
         this.shape.rotate(physicsObject.orientation);
+        this.physicsObject.invMass = 1.0/3000.0;
+        this.physicsObject.invInertia = 1.0/1570000.0;
 
         this.physicsObject.rotationalDamping = TETHER_ROTATIONAL_DAMPING;
         this.physicsObject.linearDamping = TETHER_LINEAR_DAMPING;

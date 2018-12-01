@@ -1,8 +1,6 @@
 package collisiondetection.shapes;
 
 
-
-import collisionresponse.PhysicsObject;
 import processing.core.PApplet;
 
 import java.util.Arrays;
@@ -14,7 +12,7 @@ public class Shape {
         return polygon.vertices;
     }
 
-    public Polygon polygon;
+    public collisiondetection.shapes.Polygon polygon;
     public double orientation;
 
     @Override

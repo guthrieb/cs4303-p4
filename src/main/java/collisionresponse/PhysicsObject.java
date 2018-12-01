@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PhysicsObject {
-    public final double invMass;
+    public double invMass;
     public Vector position;
 
     public Vector velocity = new Vector(0, 0);
@@ -18,7 +18,7 @@ public class PhysicsObject {
     public Shape shape;
     public double orientation;
     double angularVelocity;
-    double invInertia;
+    public double invInertia;
     double terminalVelocity = 100000;
     public Vector mg;
     public double elasticity;

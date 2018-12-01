@@ -12,7 +12,7 @@ public class HealthPowerUp extends GameObject {
     public HealthPowerUp(String id, Vector position, double mass, double momentOfInertia, int health, Colour fillColour, Colour lineColour) {
         super(id, new Shape(MapComponentVertices.SQUARE), position, mass, momentOfInertia, fillColour, lineColour, false);
         this.health = health;
-        this.physicsObject.rotationalDamping = 1;
+        this.physicsObject.rotationalDamping = 0.99;
     }
 
     public int getHealth() {

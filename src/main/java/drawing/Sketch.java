@@ -27,8 +27,8 @@ public class Sketch extends PApplet {
     public static final double SCALE = 0.5;
     private static final int PLAYER_MASS = 2132;
     private static final int PLAYER_MOMENT_INERTIA = 838101;
-    private static final double POWERUP_MOMENT_INERTIA = 838101;
-    private static final double POWERUP_MASS = 2000;
+    private static final double POWERUP_MOMENT_INERTIA = 426666;
+    private static final double POWERUP_MASS = 1600;
     private static final Colour HEALTH_FILL_COLOUR = new Colour(255, 255, 255);
     private static final Colour HEALTH_LINE_COLOUR = new Colour(255, 0, 0);
     private static final Colour WEAPON_FILL_COLOUR = new Colour(255, 0, 255);
@@ -212,24 +212,24 @@ public class Sketch extends PApplet {
     private void player2Controls() {
         Player player = players.get(1);
         if (player.getMode() == Player.Mode.MOVEMENT) {
-            if (keyCode == NUMPAD_8) {
+            if (keyCode == NUMPAD_8 || keyCode == UP) {
                 player.setBoosting(true);
 
             }
-            if (keyCode == NUMPAD_6) {
+            if (keyCode == NUMPAD_6 || keyCode == RIGHT) {
                 player.setRotating(Player.RotationDirection.RIGHT);
 
             }
-            if (keyCode == NUMPAD_4) {
+            if (keyCode == NUMPAD_4 || keyCode == LEFT) {
                 player.setRotating(Player.RotationDirection.LEFT);
             }
             if (keyCode == ENTER) {
                 player.setFiring(true);
             }
         } else if (player.getMode() == Player.Mode.TETHER) {
-            if (keyCode == NUMPAD_4) {
+            if (keyCode == NUMPAD_4  || keyCode == LEFT) {
                 player.addTether(TetherDirection.LEFT, physicsLoop.objects);
-            } else if (keyCode == NUMPAD_6) {
+            } else if (keyCode == NUMPAD_6  || keyCode == RIGHT) {
                 player.addTether(TetherDirection.RIGHT, physicsLoop.objects);
             }
         }
@@ -305,11 +305,11 @@ public class Sketch extends PApplet {
             }
 
 
-            if (keyCode == NUMPAD_8) {
+            if (keyCode == NUMPAD_8 || keyCode == UP) {
                 players.get(1).setBoosting(false);
 
             }
-            if (keyCode == NUMPAD_6 || keyCode == NUMPAD_4) {
+            if (keyCode == NUMPAD_6 || keyCode == NUMPAD_4 || keyCode == LEFT || keyCode == RIGHT) {
                 players.get(1).setRotating(Player.RotationDirection.NO_ROTATION);
             }
         }
