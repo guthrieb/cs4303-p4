@@ -1,62 +1,10 @@
 package movement;
 
 import collisiondetection.shapes.Polygon;
-import collisiondetection.shapes.Shape;
 import collisiondetection.shapes.Vector;
 import gameobjects.GameObject;
 
-import java.util.List;
-
 public class LineMath {
-    double minimumDistance;
-
-
-    public LineMath(double minimumDistance) {
-        this.minimumDistance = minimumDistance;
-    }
-
-    public GameObject getClosestIntersectingObject(GameObject currentObject, Vector position, Vector linePoint1, Vector linePoint2, List<GameObject> objects, boolean central) {
-        double closestDistance = Double.MAX_VALUE;
-        GameObject closestObject = null;
-        for (GameObject object : objects) {
-            if (!object.equals(currentObject)) {
-                Vector otherPosition = object.physicsObject.position;
-
-                Vector distanceVector = otherPosition.subtractN(position);
-                double distanceToObject = distanceVector.mag();
-
-                if (distanceToObject < minimumDistance && distanceToObject < closestDistance) {
-                    Polygon shape = object.shape.polygon.copy();
-
-                    for (int i = 0; i < shape.vertexCount; i++) {
-                        int j;
-                        if ((j = i + 1) >= shape.vertexCount) j = 0;
-
-                        Vector vertex1 = shape.vertices[i];
-                        Vector vertex2 = shape.vertices[j];
-
-                        Vector vertex1WorldSpace = vertex1.addN(otherPosition);
-                        Vector vertex2WorldSpace = vertex2.addN(otherPosition);
-
-
-                        boolean linesIntersect = checkIfLinesIntersect(vertex1WorldSpace, vertex2WorldSpace, linePoint1, linePoint2);
-                        if (linesIntersect) {
-                            closestObject = object;
-                            if (!central) {
-                                closestDistance = getIntersection(vertex1WorldSpace, vertex2WorldSpace, linePoint1, linePoint2).mag();
-                            } else {
-                                closestDistance = distanceToObject;
-                            }
-//                            break;
-                        }
-                    }
-                }
-            }
-        }
-
-        return closestObject;
-    }
-
     public static boolean objectIntersected(Vector position, Vector direction, GameObject object) {
         Polygon polygon = object.shape.polygon;
 
@@ -94,11 +42,7 @@ public class LineMath {
             return true;
         } else if (orientation3 == 0 && onSegment(p2, p1, q2)) {
             return true;
-        } else if (orientation4 == 0 && onSegment(p2, q1, q2)) {
-            return true;
-        } else {
-            return false;
-        }
+        } else return orientation4 == 0 && onSegment(p2, q1, q2);
     }
 
     private static boolean onSegment(Vector p, Vector q, Vector r) {
@@ -149,7 +93,7 @@ public class LineMath {
         return closestPoint;
     }
 
-    public static Vector getIntersection(Vector line1p1, Vector line1p2, Vector line2p1, Vector line2p2) {
+    private static Vector getIntersection(Vector line1p1, Vector line1p2, Vector line2p1, Vector line2p2) {
         double x1 = line1p2.x - line1p1.x;
         double x2 = line2p2.x - line2p1.x;
 
@@ -162,7 +106,7 @@ public class LineMath {
 
         double xIntersect;
         double yIntersect;
-        Vector refVector = null;
+        Vector refVector;
         if (x1 == 0) {
             //If v1 is vertical
             m1 = m2;

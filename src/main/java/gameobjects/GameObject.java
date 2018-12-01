@@ -1,13 +1,13 @@
 package gameobjects;
 
-import collisiondetection.contactpoints.CollisionManifoldData;
 import collisiondetection.contactpoints.ClippingPoints;
+import collisiondetection.contactpoints.CollisionManifoldData;
 import collisiondetection.epa.Epa;
 import collisiondetection.gjk.Gjk;
-import drawing.Colour;
 import collisiondetection.shapes.Shape;
 import collisiondetection.shapes.Vector;
 import collisionresponse.PhysicsObject;
+import drawing.Colour;
 import drawing.Sketch;
 import processing.core.PConstants;
 import processing.core.PShape;
@@ -77,12 +77,6 @@ public class GameObject {
 
 
     public void draw(Sketch sketch, double scale) {
-        boolean colliding = false;
-        if (colliding) {
-            sketch.fill(255, 0, 0);
-        }
-
-
         Vector[] toDraw = new Vector[shape.polygon.vertexCount];
         for (int i = 0; i < shape.polygon.vertexCount; i++) {
             Vector v = shape.polygon.vertices[i].copy();
@@ -136,30 +130,18 @@ public class GameObject {
         Shape shape1 = thisShape.translateN(object1PositionDiff);
         Shape shape2 = thatShape.translateN(object2PositionDiff);
 
-
         Gjk gjk = new Gjk(shape1, shape2, sketch);
         boolean collision = gjk.collision();
         if (collision) {
             Epa epa = new Epa(sketch);
-
             epa.execute(shape1, shape2, gjk.getSimplex());
 
-
             ClippingPoints clippingPoints = new ClippingPoints(sketch);
-
             CollisionManifoldData collisionManifold = clippingPoints.getCollisionManifold(shape1, shape2, epa.normal);
 
-
             if (collisionManifold != null && collisionManifold.getPoints().size() > 0) {
-
                 collisionManifold.addNormal(epa.normal);
-
                 collisionManifold.addDepth(epa.depth);
-
-
-//                sketch.stroke(0, 255, 0);
-//                sketch.line(collisionManifold.getPoints().get(0), collisionManifold.getPoints().get(0).addN(epa.normal.multiplyN(100)));
-//                sketch.stroke(0, 0, 0);
                 return collisionManifold;
             }
         }

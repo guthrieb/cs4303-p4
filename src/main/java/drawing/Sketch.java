@@ -45,7 +45,7 @@ public class Sketch extends PApplet {
     private static int weaponPackNo = 0;
     public static int noOfPowerups = 0;
 
-    List<FadingText> weaponInfos = new ArrayList<>();
+    private List<FadingText> weaponInfos = new ArrayList<>();
 
     private Timer countDownTimer = new Timer(1000);
     private int countDown = 3;
@@ -75,7 +75,6 @@ public class Sketch extends PApplet {
     private List<String> floors = new ArrayList<>(Arrays.asList(Maps.FLOOR_1_NAME, Maps.FLOOR_2_NAME, Maps.FLOOR_3_NAME, Maps.FLOOR_4_NAME));
     private int currentMap = 0;
     private int currentFloor = 0;
-    private boolean floored = true;
     private List<Trail> trails = new ArrayList<>();
 
     public static void main(String[] args) {
@@ -318,7 +317,6 @@ public class Sketch extends PApplet {
 
     public void draw() {
         background(200, 200, 200);
-        surface.setTitle("Framrat: " + frameRate);
         background(background);
         ListIterator<Trail> trailListIterator = trails.listIterator();
         while (trailListIterator.hasNext()) {

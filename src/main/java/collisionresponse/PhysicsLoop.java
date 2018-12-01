@@ -7,8 +7,8 @@ import collisiondetection.shapes.Vector;
 import drawing.Sketch;
 import gameobjects.DestroyerBeam;
 import gameobjects.GameObject;
-import world.HealthPowerUp;
 import playercontrols.Player;
+import world.HealthPowerUp;
 import world.WeaponPowerUp;
 
 import java.util.*;
@@ -48,7 +48,7 @@ public class PhysicsLoop {
                     continue;
                 }
 
-                SeparatingAxis axis = new SeparatingAxis(sketch);
+                SeparatingAxis axis = new SeparatingAxis();
                 MinimumTranslationVector minimumTranslationVector = axis.separatingAxis(a, b);
 
                 if(minimumTranslationVector != null) {

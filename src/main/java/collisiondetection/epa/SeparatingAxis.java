@@ -2,16 +2,9 @@ package collisiondetection.epa;
 
 import collisiondetection.shapes.Shape;
 import collisiondetection.shapes.Vector;
-import drawing.Sketch;
 import gameobjects.GameObject;
 
 public class SeparatingAxis {
-    private final Sketch sketch;
-
-    public SeparatingAxis(Sketch sketch) {
-        this.sketch = sketch;
-    }
-
     public MinimumTranslationVector separatingAxis(GameObject object1, GameObject object2) {
         Shape shape1 = object1.shape;
         Shape shape2 = object2.shape;
@@ -26,7 +19,7 @@ public class SeparatingAxis {
 
         for (int j = 0; j < edges1.length; j++) {
             axes1[j] = new Vector(-edges1[j].y, edges1[j].x);
-            axes1[j].normalize();;
+            axes1[j].normalize();
         }
 
         for (int j = 0; j < edges2.length; j++) {
@@ -34,8 +27,7 @@ public class SeparatingAxis {
             axes2[j].normalize();
         }
 
-        for (int i = 0; i < axes1.length; i++) {
-            Vector currentAxis = axes1[i];
+        for (Vector currentAxis : axes1) {
             Projection p1 = project(shape1, object1.physicsObject.position, currentAxis);
             Projection p2 = project(shape2, object2.physicsObject.position, currentAxis);
 
