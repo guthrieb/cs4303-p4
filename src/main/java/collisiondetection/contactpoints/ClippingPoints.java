@@ -52,14 +52,13 @@ public class ClippingPoints {
         } else {
             referenceFace = face2;
             otherFace = face1;
-            flip = true;
         }
 
 
-        return performClipping(referenceFace, otherFace, flip);
+        return performClipping(referenceFace, otherFace);
     }
 
-    private CollisionManifoldData performClipping(Face refFace, Face incFace, boolean flip) {
+    private CollisionManifoldData performClipping(Face refFace, Face incFace) {
         Vector refVector = refFace.getVector();
         refVector.normalize();
 

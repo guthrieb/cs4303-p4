@@ -2,8 +2,6 @@ package collisionresponse;
 
 import collisiondetection.shapes.Shape;
 import collisiondetection.shapes.Vector;
-import processing.core.PApplet;
-import sun.security.provider.SHA;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,19 +10,16 @@ public class PhysicsObject {
     public final double invMass;
     public Vector position;
 
-    public boolean damageable = false;
-
-
     public Vector velocity = new Vector(0, 0);
     public List<Force> forces = new ArrayList<>();
     public double mass;
-    public double momentOfInertia;
+    private double momentOfInertia;
 
     public Shape shape;
     public double orientation;
-    public double angularVelocity;
-    public double invInertia;
-    public double terminalVelocity = 100000;
+    double angularVelocity;
+    double invInertia;
+    double terminalVelocity = 100000;
     public Vector mg;
     public double elasticity;
     public double linearDamping = 0.989;
@@ -54,11 +49,6 @@ public class PhysicsObject {
         this.elasticity = 0;
     }
 
-    public PhysicsObject(Shape shape, Vector position, double mass, double momentOfInertia, boolean damageable) {
-        this(shape, position, mass, momentOfInertia);
-        this.damageable = true;
-    }
-
     public void addForce(String id, Vector force, Vector contactPoint, boolean angular) {
         forces.add(new Force(id, force, contactPoint, angular));
     }
@@ -67,7 +57,7 @@ public class PhysicsObject {
         forces.add(new Force(id, force, contactPoint, true));
     }
 
-    public Vector calculateTotalForce() {
+    Vector calculateTotalForce() {
         Vector totalForce = new Vector(0, 0);
         for (Force force : forces) {
             totalForce.add(force.directions);
@@ -115,5 +105,9 @@ public class PhysicsObject {
 
     public void setImpulseCollisions(List<Double> impulseCollisions) {
         this.impulseCollisions = impulseCollisions;
+    }
+
+    public boolean isStatic() {
+        return mass == 0;
     }
 }

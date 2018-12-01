@@ -34,6 +34,13 @@ public class MapComponentVertices {
             new Vector(-2000, 5)
     };
 
+    public static final Vector[] DESTROYER_BEAM_VERTICAL = new Vector[]{
+            new Vector(-5, -2000),
+            new Vector(5, -2000),
+            new Vector(5, 2000),
+            new Vector(-5, 2000)
+    };
+
     public static Vector[] WALL_SHAPE_1 = new Vector[]{
             new Vector(-100, -1500),
             new Vector(100, -1500),

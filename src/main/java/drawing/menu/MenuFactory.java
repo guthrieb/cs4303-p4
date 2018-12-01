@@ -1,6 +1,7 @@
 package drawing.menu;
 
 import collisiondetection.shapes.Vector;
+import drawing.Colour;
 import drawing.Sketch;
 
 public class MenuFactory {
@@ -11,7 +12,14 @@ public class MenuFactory {
     }
 
     public Menu getMenu() {
-        Menu menu = new Menu(sketch);
+        Menu menu = new Menu();
+
+        MenuBox title = new MenuBox(sketch, "title", "M O R P H Z O N E",
+                new Vector(sketch.width / 2f, sketch.height / 8f),
+                sketch.width / 4f, sketch.height / 10f,
+                null);
+        title.fillColour = new Colour(255, 255, 255, 200);
+
 
         MenuBox playButton = new MenuBox(sketch, "play_game", "Play!",
                 new Vector(sketch.width / 2f, sketch.height / 4f),
@@ -34,6 +42,7 @@ public class MenuFactory {
                     sketch.updateFloorText();
                 });
 
+        menu.addMenuBox("main_menu", title);
         menu.addMenuBox("main_menu", playButton);
         menu.addMenuBox("main_menu", mapSelect);
         menu.addMenuBox("main_menu", flooredSelect);

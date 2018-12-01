@@ -38,6 +38,16 @@ public class PhysicsLoop {
             for(int j = i + 1; j < objects.size(); j++) {
                 GameObject b = objects.get(j);
 
+
+
+                if(a.physicsObject.isStatic() && b.physicsObject.isStatic()) {
+                    continue;
+                }
+                double radiusSum = a.radiusMag + b.radiusMag;
+                if(radiusSum < a.physicsObject.position.subtractN(b.physicsObject.position).mag()) {
+                    continue;
+                }
+
                 SeparatingAxis axis = new SeparatingAxis(sketch);
                 MinimumTranslationVector minimumTranslationVector = axis.separatingAxis(a, b);
 

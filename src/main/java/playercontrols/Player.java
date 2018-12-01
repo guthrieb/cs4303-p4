@@ -225,7 +225,7 @@ public class Player extends GameObject {
     }
 
     public Player(String id, Sketch sketch, Shape shape, Vector position, double mass, double momentOfInertia, Colour fillColour, Colour lineColour) {
-        super(id, shape, position, mass, momentOfInertia, true, fillColour, lineColour, false);
+        super(id, shape, position, mass, momentOfInertia, fillColour, lineColour, false);
         this.playerColour = fillColour;
         this.sketch = sketch;
         addTimers();

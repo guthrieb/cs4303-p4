@@ -1,17 +1,21 @@
 package drawing.menu;
 
 import collisiondetection.shapes.Vector;
+import drawing.Colour;
 import drawing.Sketch;
 import processing.core.PConstants;
 
 public class MenuBox {
     private final Sketch sketch;
+    private final boolean runnable;
     private String content;
     private final Vector screenPos;
     private final float width;
     private final float height;
     private final Runnable consumer;
     private String id;
+    public Colour highlightColour = new Colour(255, 0, 0, 100);
+    public Colour fillColour = new Colour(255, 255, 255, 100);
 
     public MenuBox(Sketch sketch, String id, String content, Vector screenPos, float width, float height, Runnable consumer) {
         this.sketch = sketch;
@@ -21,6 +25,7 @@ public class MenuBox {
         this.height = height;
         this.consumer = consumer;
         this.id = id;
+        this.runnable = consumer != null;
     }
 
     public void handleClick() {
@@ -30,10 +35,9 @@ public class MenuBox {
     public void draw() {
         sketch.rectMode(PConstants.CENTER);
         if(clickable()) {
-            sketch.fill(255, 0, 0, 100);
-
+            sketch.fill(highlightColour.r, highlightColour.g, highlightColour.b, highlightColour.alpha);
         } else {
-            sketch.fill(255, 255, 255, 100);
+            sketch.fill(fillColour.r, fillColour.b, fillColour.g, fillColour.alpha);
         }
 
 
@@ -42,7 +46,7 @@ public class MenuBox {
 
         sketch.stroke(0, 0, 0);
         sketch.fill(0, 0, 0);
-        sketch.textSize(40);
+        sketch.textSize(20);
         sketch.textAlign(PConstants.CENTER, PConstants.CENTER);
         sketch.text(content, (float)screenPos.x, (float)screenPos.y);
         sketch.stroke(0, 0, 0);
@@ -53,6 +57,10 @@ public class MenuBox {
     }
 
     boolean clickable() {
+        if(!runnable) {
+            return false;
+        }
+
         int x = sketch.mouseX;
         int y = sketch.mouseY;
 

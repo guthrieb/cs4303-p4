@@ -23,10 +23,6 @@ import world.WeaponPowerUp;
 import java.util.*;
 
 public class Sketch extends PApplet {
-    private static final String MAP_1_NAME = "map1";
-    private static final String MAP_2_NAME = "map2";
-    private static final String MAP_3_NAME = "map3";
-    private static final String MAP_4_NAME = "map4";
     private static final double DT = 1 / 60.0;
     public static final double SCALE = 0.5;
     private static final int PLAYER_MASS = 2132;
@@ -42,15 +38,17 @@ public class Sketch extends PApplet {
     public static final String SHOTGUN_KEY = "shotgun";
     public static final String MACHINE_GUN_KEY = "machine_gun";
     public static final String DESTROYED_KEY = "destroyed";
-    public static final int POWERUP_LIMIT = 3;
-    public static final int POWERUP_PROBABILITY = 700;
+    private static final int POWERUP_LIMIT = 3;
+    private static final int POWERUP_PROBABILITY = 700;
     private PImage background;
     private static int healthPackNo = 0;
     private static int weaponPackNo = 0;
     public static int noOfPowerups = 0;
 
-    Timer countDownTimer = new Timer(1000);
-    int countDown = 3;
+    List<FadingText> weaponInfos = new ArrayList<>();
+
+    private Timer countDownTimer = new Timer(1000);
+    private int countDown = 3;
 
     private List<Colour> colours = new ArrayList<>(Arrays.asList(
             new Colour(200, 0, 0),
@@ -74,7 +72,9 @@ public class Sketch extends PApplet {
     public List<Laser> lasers = new ArrayList<>();
 
     private List<String> maps = new ArrayList<>(Arrays.asList(Maps.MAP_1_NAME, Maps.MAP_2_NAME, Maps.MAP_3_NAME, Maps.MAP_4_NAME));
+    private List<String> floors = new ArrayList<>(Arrays.asList(Maps.FLOOR_1_NAME, Maps.FLOOR_2_NAME, Maps.FLOOR_3_NAME, Maps.FLOOR_4_NAME));
     private int currentMap = 0;
+    private int currentFloor = 0;
     private boolean floored = true;
     private List<Trail> trails = new ArrayList<>();
 
@@ -87,7 +87,7 @@ public class Sketch extends PApplet {
         if (currentMap >= maps.size()) {
             currentMap = 0;
         }
-        initialiseMap(maps.get(currentMap), floored, false);
+        initialiseMap(maps.get(currentMap), floors.get(currentFloor), false);
     }
 
     public void updateMapText() {
@@ -95,17 +95,19 @@ public class Sketch extends PApplet {
     }
 
     public void changeFloor() {
-        floored = !floored;
-        physicsLoop.objects = new ArrayList<>();
-        initialiseMap(maps.get(currentMap), floored, false);
+        currentFloor++;
+        if (currentFloor >= floors.size()) {
+            currentFloor = 0;
+        }
+        initialiseMap(maps.get(currentMap), floors.get(currentFloor), false);
     }
 
     public void updateFloorText() {
-        menu.updateMenuEntry(floored ? "Floor: On" : "Floor: Off", "main_menu", "floored_select");
+        menu.updateMenuEntry("Map Type: " + floors.get(currentFloor), "main_menu", "floored_select");
     }
 
     public void beginPlay() {
-        initialiseMap(maps.get(currentMap), floored, true);
+        initialiseMap(maps.get(currentMap), floors.get(currentFloor), true);
         countDownTimer.reset();
         state = GameState.COUNTDOWN;
     }
@@ -129,22 +131,23 @@ public class Sketch extends PApplet {
         playerHashMap.put(MACHINE_GUN_KEY, minim.loadFile("audio/machine_gun_zap.mp3"));
         playerHashMap.put(DESTROYED_KEY, minim.loadFile("audio/destroyed.mp3"));
         this.background = loadImage("img/background.jpg");
+        this.background.resize(width, height);
         AudioPlayer music = minim.loadFile("audio/funk_floor.mp3");
-//        music.loop();
+        music.loop();
         super.setup();
 
         physicsLoop = new PhysicsLoop(new ArrayList<>(), 10, DT, this);
         this.gameUI = new GameUI(this);
         this.menu = new MenuFactory(this).getMenu();
-        initialiseMap(maps.get(currentMap), floored, false);
+        initialiseMap(maps.get(currentMap), floors.get(currentFloor), false);
     }
 
     public void settings() {
         fullScreen();
     }
 
-    private void initialiseMap(String mapName, boolean floored, boolean spawnPlayers) {
-        GameMap gameMap = Maps.getLayout(floored, mapName);
+    private void initialiseMap(String mapName, String floorName, boolean spawnPlayers) {
+        GameMap gameMap = Maps.getLayout(floorName, mapName);
         spawnLocations = gameMap.getPowerUpSpawns();
 
         players = new ArrayList<>();
@@ -162,8 +165,8 @@ public class Sketch extends PApplet {
                 Player newPlayer = new Player("P" + playerNo, this, playerShape1, playersSpawn.copy(), PLAYER_MASS,
                         PLAYER_MOMENT_INERTIA, colours.get(i), new Colour(0, 0, 0));
 
-                newPlayer.shape.rotate(Math.PI*3/2);
-                newPlayer.physicsObject.orientation = Math.PI*3/2;
+                newPlayer.shape.rotate(Math.PI * 3 / 2);
+                newPlayer.physicsObject.orientation = Math.PI * 3 / 2;
                 players.add(newPlayer);
                 physicsLoop.objects.add(newPlayer);
             }
@@ -181,9 +184,9 @@ public class Sketch extends PApplet {
     }
 
     private void gameOverControls() {
-        if(key == 'r') {
+        if (key == 'r') {
             resetGame();
-            initialiseMap(maps.get(currentMap), floored, true);
+            initialiseMap(maps.get(currentMap), floors.get(currentFloor), true);
         } else if (key == 'm') {
             state = GameState.MENU;
         } else if (key == 'q') {
@@ -315,6 +318,7 @@ public class Sketch extends PApplet {
 
     public void draw() {
         background(200, 200, 200);
+        surface.setTitle("Framrat: " + frameRate);
         background(background);
         ListIterator<Trail> trailListIterator = trails.listIterator();
         while (trailListIterator.hasNext()) {
@@ -326,39 +330,39 @@ public class Sketch extends PApplet {
             }
         }
 
-        if(state == GameState.COUNTDOWN) {
+        if (state == GameState.COUNTDOWN) {
             for (GameObject object : physicsLoop.objects) {
                 object.draw(this, 0.5);
             }
 
-            if(countDownTimer.completed()) {
+            if (countDownTimer.completed()) {
                 countDown--;
                 countDownTimer.reset();
-                if(countDown < 0) {
+                if (countDown < 0) {
                     state = GameState.PLAYING;
+                    countDown = 3;
                 }
             }
 
             fill(255, 255, 255);
-            if(countDown > 0) {
+            if (countDown > 0) {
                 textSize(100);
-                text(countDown, width/2f, height/2f);
+                text(countDown, width / 2f, height / 2f);
                 textSize(20);
             } else {
                 textSize(100);
-                text("GO", width/2f, height/2f);
+                text("GO", width / 2f, height / 2f);
                 textSize(20);
             }
 
         } else if (state == GameState.MENU) {
-            System.out.println(physicsLoop.objects.size());
             for (GameObject object : physicsLoop.objects) {
-                object.draw(this, 0.5);
+                object.draw(this, SCALE);
             }
             drawMenu();
         } else if (state == GameState.GAME_OVER) {
             for (GameObject object : physicsLoop.objects) {
-                object.draw(this, 0.5);
+                object.draw(this, SCALE);
             }
 
             textSize(100);
@@ -372,7 +376,6 @@ public class Sketch extends PApplet {
             physicsLoop.step();
         } else {
             fill(255, 255, 255);
-            System.out.println(frameRate);
 
             spawnPowerups();
 
@@ -397,6 +400,15 @@ public class Sketch extends PApplet {
                 }
             }
 
+            ListIterator<FadingText> fadingTextListIterator = weaponInfos.listIterator();
+            while (fadingTextListIterator.hasNext()) {
+                FadingText text = fadingTextListIterator.next();
+                text.draw(SCALE);
+                if (text.complete()) {
+                    fadingTextListIterator.remove();
+                }
+            }
+
             gameUI.draw(players);
             physicsLoop.step();
 
@@ -418,8 +430,6 @@ public class Sketch extends PApplet {
                 return false;
             }
         }
-
-        System.out.println("GAME OVER");
         this.winningPlayer = alivePlayer;
         return true;
     }
@@ -458,16 +468,16 @@ public class Sketch extends PApplet {
         int laserType = random.nextInt(4);
 
         if (laserType == 0) {
-            physicsLoop.objects.add(new WeaponPowerUp("powerup_" + weaponPackNo++, vector.copy(), POWERUP_MASS, POWERUP_MOMENT_INERTIA,
+            physicsLoop.objects.add(new WeaponPowerUp("powerup_" + weaponPackNo++, "Laser Rifle", vector.copy(), POWERUP_MASS, POWERUP_MOMENT_INERTIA,
                     LaserMode.standardLaserMode(), WEAPON_FILL_COLOUR, WEAPON_LINE_COLOUR));
         } else if (laserType == 1) {
-            physicsLoop.objects.add(new WeaponPowerUp("powerup_" + weaponPackNo++, vector.copy(), POWERUP_MASS, POWERUP_MOMENT_INERTIA,
+            physicsLoop.objects.add(new WeaponPowerUp("powerup_" + weaponPackNo++, "Laser Shotgun", vector.copy(), POWERUP_MASS, POWERUP_MOMENT_INERTIA,
                     LaserMode.shotgunLasers(), WEAPON_FILL_COLOUR, WEAPON_LINE_COLOUR));
         } else if (laserType == 2) {
-            physicsLoop.objects.add(new WeaponPowerUp("powerup_" + weaponPackNo++, vector.copy(), POWERUP_MASS, POWERUP_MOMENT_INERTIA,
+            physicsLoop.objects.add(new WeaponPowerUp("powerup_" + weaponPackNo++, "M E G A L A S E R", vector.copy(), POWERUP_MASS, POWERUP_MOMENT_INERTIA,
                     LaserMode.megaLaserMode(), WEAPON_FILL_COLOUR, WEAPON_LINE_COLOUR));
         } else if (laserType == 3) {
-            physicsLoop.objects.add(new WeaponPowerUp("powerup_" + weaponPackNo++, vector.copy(), POWERUP_MASS, POWERUP_MOMENT_INERTIA,
+            physicsLoop.objects.add(new WeaponPowerUp("powerup_" + weaponPackNo++, "Machine Gun Laser", vector.copy(), POWERUP_MASS, POWERUP_MOMENT_INERTIA,
                     LaserMode.machineGunLasers(), WEAPON_FILL_COLOUR, WEAPON_LINE_COLOUR));
         }
     }
@@ -492,6 +502,8 @@ public class Sketch extends PApplet {
 
     public void addPowerUpInteractions(Player player, WeaponPowerUp powerUp) {
         player.collect(powerUp);
+        weaponInfos.add(new FadingText(this, powerUp.name, player.physicsObject.position, 1000));
+
     }
 
     public void addPowerUpInteractions(Player player, HealthPowerUp powerUp) {

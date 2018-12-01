@@ -5,16 +5,10 @@ import drawing.Sketch;
 import java.util.*;
 
 public class Menu {
-    private final Sketch sketch;
-    List<MenuBox> menuBoxList = new ArrayList<>();
     private final Map<String, ArrayList<MenuBox>> pages = new HashMap<>();
     private String currentPage = "main_menu";
 
-    public Menu(Sketch sketch) {
-        this.sketch = sketch;
-    }
-
-    public void addMenuBox(String page, MenuBox menuBox) {
+    void addMenuBox(String page, MenuBox menuBox) {
         if(pages.containsKey(page)) {
             pages.get(page).add(menuBox);
         } else {
@@ -40,20 +34,10 @@ public class Menu {
 
     public void handleClick() {
         List<MenuBox> menuBoxes = pages.get(currentPage);
-        System.out.println(menuBoxes);
         for (MenuBox menuBox : menuBoxes) {
             if (menuBox.clickable()) {
-                System.out.println("SUCCESSFUL CLICK");
                 menuBox.handleClick();
             }
-        }
-    }
-
-    public void changePage(String page) throws InvalidPageException {
-        if(pages.containsKey(page)) {
-            currentPage = page;
-        } else {
-            throw new InvalidPageException("Page not found: " + page);
         }
     }
 

@@ -7,7 +7,7 @@ public class Polygon {
     public int vertexCount;
     public Vector[] vertices = new Vector[64];
 
-    public Polygon(Vector[] vertices) {
+    Polygon(Vector[] vertices) {
         int furthestRightPointIndex = 0;
         double highestXPoint = vertices[0].x;
 

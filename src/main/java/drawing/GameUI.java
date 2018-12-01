@@ -20,6 +20,20 @@ public class GameUI {
     }
 
     private void drawPlayerInfo(Player player, int i, int totalDivisions) {
+        float leftBoundary = ((float) i / totalDivisions) * sketch.width;
+        float rightBoundary = ((float) (i + 1) / totalDivisions) * sketch.width;
+        float bottomBoundary = sketch.height*2 / 30f + sketch.height/90f + sketch.height / 50f;
+
+        sketch.rectMode(PConstants.CORNERS);
+        sketch.fill(0, 0, 0, 0);
+        sketch.strokeWeight(4);
+        sketch.stroke(player.playerColour.r, player.playerColour.g, player.playerColour.b, 200);
+        float boundaryMargin = sketch.width/20f;
+        float yBoundaryMargin = sketch.height/40f;
+        sketch.rect(leftBoundary + boundaryMargin, yBoundaryMargin, rightBoundary - boundaryMargin, bottomBoundary + yBoundaryMargin);
+        sketch.strokeWeight(1);
+        sketch.stroke(0, 0, 0);
+
         drawHealthBar(player.getPercentageRemainingHealth(), i, totalDivisions);
         drawFireBar(player.firingMode.percentageReady(), i, totalDivisions);
     }

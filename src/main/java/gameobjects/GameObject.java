@@ -20,8 +20,9 @@ public class GameObject {
     public Shape shape;
     public collisionresponse.PhysicsObject physicsObject;
     private boolean tetherable;
-    public Colour fillColour = new Colour(100, 100, 100);
-    protected Colour lineColour = new Colour(255, 0, 0);
+    protected Colour fillColour;
+    protected Colour lineColour;
+    public double radiusMag;
 
     @Override
     public boolean equals(Object o) {
@@ -36,22 +37,38 @@ public class GameObject {
         return Objects.hash(id);
     }
 
-    public GameObject(String id, Shape shape, Vector position, double mass, double momentOfInertia, boolean damageable, Colour fillColour, Colour lineColour, boolean tetherable) {
+    public GameObject(String id, Shape shape, Vector position, double mass, double momentOfInertia, Colour fillColour, Colour lineColour, boolean tetherable) {
         this.id = id;
         this.shape = shape;
-        this.physicsObject = new PhysicsObject(shape, position, mass, momentOfInertia, damageable);
+        this.physicsObject = new PhysicsObject(shape, position, mass, momentOfInertia);
         this.fillColour = fillColour;
         this.lineColour = lineColour;
         this.tetherable = tetherable;
+        this.radiusMag = getMaxRadius(shape);
     }
 
-    public GameObject(String id, Shape shape, Vector position, double mass, double momentOfInertia, boolean damageable, Colour fillColour, Colour lineColour) {
+    private double getMaxRadius(Shape shape) {
+        double maxDistance = 0;
+
+        for(int i = 0; i < shape.polygon.vertexCount; i++) {
+            Vector vertex = shape.polygon.vertices[i];
+            double mag = vertex.mag();
+            if(mag > maxDistance) {
+                maxDistance = mag;
+            }
+        }
+        return maxDistance;
+    }
+
+    public GameObject(String id, Shape shape, Vector position, double mass, double momentOfInertia, Colour fillColour, Colour lineColour) {
         this.id = id;
         this.shape = shape;
-        this.physicsObject = new PhysicsObject(shape, position, mass, momentOfInertia, damageable);
+        this.physicsObject = new PhysicsObject(shape, position, mass, momentOfInertia);
         this.fillColour = fillColour;
         this.lineColour = lineColour;
         this.tetherable = true;
+        this.radiusMag = getMaxRadius(shape);
+
     }
 
     public void applyImpulse(Vector impulse, Vector normal) {
@@ -60,6 +77,7 @@ public class GameObject {
 
 
     public void draw(Sketch sketch, double scale) {
+        boolean colliding = false;
         if (colliding) {
             sketch.fill(255, 0, 0);
         }
@@ -81,14 +99,8 @@ public class GameObject {
         pShape.fill(fillColour.r, fillColour.g, fillColour.b, fillColour.alpha);
 
 
-        for (int i = 0; i < toDraw.length; i++) {
-            int j;
-            if (((j = i + 1) == toDraw.length)) {
-                j = 0;
-            }
-            pShape.vertex((float)toDraw[i].x, (float)toDraw[i].y);
-
-//            sketch.line((float) toDraw[i].x, (float) toDraw[i].y, (float) toDraw[j].x, (float) toDraw[j].y);
+        for (Vector aToDraw : toDraw) {
+            pShape.vertex((float) aToDraw.x, (float) aToDraw.y);
         }
 
         pShape.endShape(PConstants.CLOSE);
@@ -97,8 +109,6 @@ public class GameObject {
         sketch.strokeWeight(1);
         sketch.fill(0, 0, 0);
     }
-
-    boolean colliding = false;
 
     public CollisionManifoldData tryCollision(Sketch sketch, GameObject object2) {
 
@@ -160,24 +170,8 @@ public class GameObject {
         return physicsObject.mass == 0.0;
     }
 
-    public void addForce(String id, Vector vector) {
-        physicsObject.addForce(id, vector, shape.centerPoint());
-    }
-
     public void resetForcesAndTorques() {
         physicsObject.forces = new ArrayList<>();
-    }
-
-    public Vector getCenterPoint() {
-        return shape.centerPoint().addN(physicsObject.position);
-    }
-
-    public void drawOrientation(Sketch sketch) {
-
-        Vector centerPoint = getCenterPoint();
-        Vector orientationPoint = new Vector(20*Math.cos(physicsObject.orientation), 20*Math.sin(physicsObject.orientation));
-
-        sketch.line(centerPoint, centerPoint.addN(orientationPoint));
     }
 
     public boolean tetherable() {
