@@ -3,23 +3,18 @@ package collisiondetection.gjk;
 import collisiondetection.shapes.Shape;
 import collisiondetection.shapes.Simplex;
 import collisiondetection.shapes.Vector;
-import collisiondetection.shapes.VectorConstants;
-import drawing.Sketch;
-import processing.core.PApplet;
 
 import java.util.List;
 
 public class Gjk {
     private final Shape shape1;
     private final Shape shape2;
-    private Sketch sketch;
-    private Simplex simplex;
+    private final Simplex simplex;
     private Vector direction;
 
-    public Gjk(Shape shape1, Shape shape2, Sketch sketch) {
+    public Gjk(Shape shape1, Shape shape2) {
         this.shape1 = shape1;
         this.shape2 = shape2;
-        this.sketch = sketch;
         simplex = new Simplex();
     }
 

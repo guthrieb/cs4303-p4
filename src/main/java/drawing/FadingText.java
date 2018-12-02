@@ -4,12 +4,12 @@ import collisiondetection.shapes.Vector;
 import helpers.Timer;
 import processing.core.PConstants;
 
-public class FadingText {
+class FadingText {
     private final String text;
     private final Vector position;
     private final Sketch sketch;
-    private Timer timer;
-    private Colour fill = new Colour(255, 255, 255);
+    private final Timer timer;
+    private final Colour fill = new Colour(255, 255, 255);
 
     FadingText(Sketch sketch, String text, Vector position, long timeToFade) {
         this.sketch = sketch;

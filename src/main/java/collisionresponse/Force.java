@@ -5,9 +5,9 @@ import collisiondetection.shapes.Vector;
 import java.util.Objects;
 
 public class Force {
-    private String forceId;
-    public Vector directions;
-    public Vector contactPoint;
+    public final Vector directions;
+    public final Vector contactPoint;
+    private final String forceId;
     public boolean angular = true;
 
     public Force(String id, Vector directions, Vector contactPoint) {

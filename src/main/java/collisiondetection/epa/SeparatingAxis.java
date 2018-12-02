@@ -5,12 +5,11 @@ import collisiondetection.shapes.Vector;
 import gameobjects.GameObject;
 
 public class SeparatingAxis {
-    public MinimumTranslationVector separatingAxis(GameObject object1, GameObject object2) {
+    public boolean separatingAxis(GameObject object1, GameObject object2) {
         Shape shape1 = object1.shape;
         Shape shape2 = object2.shape;
 
         double overlap = Double.MAX_VALUE;
-        Vector smallestAxis = null;
 
         Vector[] edges1 = getAbsoluteEdges(shape1, object1.physicsObject.position);
         Vector[] edges2 = getAbsoluteEdges(shape2, object2.physicsObject.position);
@@ -33,16 +32,15 @@ public class SeparatingAxis {
 
             if (!p1.overlaps(p2)) {
                 //No collision
-                return null;
+                return false;
             } else {
                 double tmpOverlap = p1.getOverlap(p2);
                 if (tmpOverlap < overlap) {
                     overlap = tmpOverlap;
-                    smallestAxis = currentAxis;
                 }
             }
         }
-        return new MinimumTranslationVector(overlap, smallestAxis);
+        return true;
     }
 
     private Projection projectOntoAxis(Shape shape, Vector position, Vector currentAxis) {

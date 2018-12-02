@@ -4,8 +4,8 @@ import java.util.Arrays;
 
 public class Polygon {
 
-    public int vertexCount;
-    public Vector[] vertices = new Vector[64];
+    public final int vertexCount;
+    public final Vector[] vertices = new Vector[64];
 
     Polygon(Vector[] vertices) {
         int furthestRightPointIndex = 0;

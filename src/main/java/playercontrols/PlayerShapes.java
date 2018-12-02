@@ -1,6 +1,5 @@
 package playercontrols;
 
-import collisiondetection.shapes.Shape;
 import collisiondetection.shapes.Vector;
 
 public class PlayerShapes {
@@ -10,14 +9,14 @@ public class PlayerShapes {
             new Vector(20, 20),
             new Vector(-20, 20)
     };
-    public static Vector[] DROPPER_VERTICES = new Vector[]{
+    public static final Vector[] DROPPER_VERTICES = new Vector[]{
             new Vector(-20, -30),
             new Vector(20, -20),
             new Vector(20, 20),
             new Vector(-20, 30)
     };
 
-    public static Vector[] BOOSTING_VERTICES = new Vector[] {
+    public static final Vector[] BOOSTING_VERTICES = new Vector[]{
             new Vector(-20, 20),
             new Vector(-20, -20),
             new Vector(40, 0)
@@ -51,7 +50,7 @@ public class PlayerShapes {
 //            new Vector(-25, 5),
 //    };
 
-    public static Vector[] TETHERED_VERTICES = new Vector[] {
+    public static final Vector[] TETHERED_VERTICES = new Vector[]{
             new Vector(-20, -30),
             new Vector(20, -30),
             new Vector(40, 0),
@@ -89,8 +88,8 @@ public class PlayerShapes {
     };
 
     public static void main(String[] args) {
-        for(int i = 0; i < DROPPER_VERTICES.length; i++) {
-            Vector x = DROPPER_VERTICES[i].multiplyN(10);
+        for (Vector DROPPER_VERTICE : DROPPER_VERTICES) {
+            Vector x = DROPPER_VERTICE.multiplyN(10);
         }
     }
 }

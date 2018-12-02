@@ -5,12 +5,11 @@ import helpers.Timer;
 
 public class LaserMode {
 
-    private Timer fireRate;
-
-    int noOfLasers;
-    int laserLength;
-    double laserMod;
-    double spreadBetweenLasers;
+    final int noOfLasers;
+    final int laserLength;
+    final double laserMod;
+    final double spreadBetweenLasers;
+    final boolean automatic;
 
     private LaserMode(int noOfLasers, long fireRate, boolean automatic, int laserLength, double laserMod, double spreadBetweenLasers, String soundKey) {
         this.noOfLasers = noOfLasers;
@@ -21,8 +20,9 @@ public class LaserMode {
         this.fireRate = new Timer(fireRate);
         this.soundKey = soundKey;
     }
-    boolean automatic;
-    String soundKey;
+
+    final String soundKey;
+    private final Timer fireRate;
 
     public static LaserMode laserRifleMode() {
         return new LaserMode(1, 1000, false, 100000000, 3, 0, Sketch.REGULARLASER_KEY);

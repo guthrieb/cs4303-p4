@@ -3,9 +3,9 @@ package helpers;
 import java.util.Date;
 
 public class Timer {
-    long startTime = System.currentTimeMillis();
-    long elapsedTime = 0L;
-    long timeLimit;
+    private final long timeLimit;
+    private long startTime = System.currentTimeMillis();
+    private long elapsedTime = 0L;
 
     public Timer(long timeLimit) {
         this.timeLimit = timeLimit;

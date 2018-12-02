@@ -45,15 +45,10 @@ public class Sketch extends PApplet {
     private static int weaponPackNo = 0;
     public static int noOfPowerups = 0;
 
-    private List<FadingText> weaponInfos = new ArrayList<>();
-
-    private Timer countDownTimer = new Timer(1000);
+    public final HashMap<String, AudioPlayer> playerHashMap = new HashMap<>();
+    private final List<FadingText> weaponInfos = new ArrayList<>();
     private int countDown = 3;
-
-    private List<Colour> colours = new ArrayList<>(Arrays.asList(
-            new Colour(200, 0, 0),
-            new Colour(0, 200, 0)
-    ));
+    private final Timer countDownTimer = new Timer(1000);
 
 
     private static final int NUMPAD_6 = 227;
@@ -64,15 +59,16 @@ public class Sketch extends PApplet {
     private Menu menu;
     private Player winningPlayer;
     private GameState state = GameState.MENU;
-
-    public HashMap<String, AudioPlayer> playerHashMap = new HashMap<>();
+    private final List<Colour> colours = new ArrayList<>(Arrays.asList(
+            new Colour(200, 0, 0),
+            new Colour(0, 200, 0)
+    ));
     private List<Vector> spawnLocations = new ArrayList<>();
     private PhysicsLoop physicsLoop;
     private List<Player> players = new ArrayList<>();
     public List<Laser> lasers = new ArrayList<>();
-
-    private List<String> maps = new ArrayList<>(Arrays.asList(Maps.MAP_1_NAME, Maps.MAP_2_NAME, Maps.MAP_3_NAME, Maps.MAP_4_NAME));
-    private List<String> floors = new ArrayList<>(Arrays.asList(Maps.FLOOR_1_NAME, Maps.FLOOR_2_NAME, Maps.FLOOR_3_NAME, Maps.FLOOR_4_NAME));
+    private final List<String> maps = new ArrayList<>(Arrays.asList(Maps.MAP_1_NAME, Maps.MAP_2_NAME, Maps.MAP_3_NAME, Maps.MAP_4_NAME));
+    private final List<String> floors = new ArrayList<>(Arrays.asList(Maps.FLOOR_1_NAME, Maps.FLOOR_2_NAME, Maps.FLOOR_3_NAME, Maps.FLOOR_4_NAME));
     private int currentMap = 0;
     private int currentFloor = 0;
     private List<Trail> trails = new ArrayList<>();
@@ -318,7 +314,6 @@ public class Sketch extends PApplet {
 
     public void draw() {
         background(200, 200, 200);
-        System.out.println(noOfPowerups);
         background(background);
         ListIterator<Trail> trailListIterator = trails.listIterator();
         while (trailListIterator.hasNext()) {

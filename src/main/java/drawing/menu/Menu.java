@@ -1,12 +1,10 @@
 package drawing.menu;
 
-import drawing.Sketch;
-
 import java.util.*;
 
 public class Menu {
     private final Map<String, ArrayList<MenuBox>> pages = new HashMap<>();
-    private String currentPage = "main_menu";
+    private final String currentPage = "main_menu";
 
     void addMenuBox(String page, MenuBox menuBox) {
         if(pages.containsKey(page)) {

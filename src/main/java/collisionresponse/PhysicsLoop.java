@@ -1,7 +1,6 @@
 package collisionresponse;
 
 import collisiondetection.contactpoints.CollisionManifoldData;
-import collisiondetection.epa.MinimumTranslationVector;
 import collisiondetection.epa.SeparatingAxis;
 import collisiondetection.shapes.Vector;
 import drawing.Sketch;
@@ -16,8 +15,8 @@ import java.util.*;
 public class PhysicsLoop {
     static final Vector GRAVITY = new Vector(0, 50);
     private final Sketch sketch;
-    private double deltaTime;
-    private int iterations;
+    private final double deltaTime;
+    private final int iterations;
     public List<GameObject> objects;
     private List<CollisionManifoldData> collisions = new ArrayList<>();
     private Set<GameObject> objectsToRemove = new HashSet<>();
@@ -57,9 +56,9 @@ public class PhysicsLoop {
                 }
 
                 SeparatingAxis axis = new SeparatingAxis();
-                MinimumTranslationVector minimumTranslationVector = axis.separatingAxis(a, b);
+                boolean collision = axis.separatingAxis(a, b);
 
-                if (minimumTranslationVector != null) {
+                if (collision) {
                     if ((a instanceof Player && b instanceof WeaponPowerUp)) {
                         sketch.addPowerUpInteractions((Player) a, (WeaponPowerUp) b);
                         objectsToRemove.add(b);
@@ -111,7 +110,7 @@ public class PhysicsLoop {
 
     private void applyForces() {
         for (GameObject object : objects) {
-            object.physicsObject.addForce("", object.physicsObject.mg, object.physicsObject.position, false);
+            object.physicsObject.addForce("gravity", object.physicsObject.mg, object.physicsObject.position, false);
 
             calculateForces(object, deltaTime);
         }
@@ -140,14 +139,14 @@ public class PhysicsLoop {
     private void calculateVelocities(GameObject gameObject, double deltaTime) {
         PhysicsObject physicsObject = gameObject.physicsObject;
 
-        if(physicsObject.invMass == 0) {
+        if (physicsObject.invMass == 0) {
             return;
         }
 
         physicsObject.position.addMultScalar(physicsObject.velocity, deltaTime);
         gameObject.shape.rotate((physicsObject.orientation + physicsObject.angularVelocity * deltaTime) - physicsObject.orientation);
         physicsObject.orientation += physicsObject.angularVelocity * deltaTime;
-        physicsObject.angularVelocity*= physicsObject.rotationalDamping;
+        physicsObject.angularVelocity *= physicsObject.rotationalDamping;
         physicsObject.velocity.multiply(physicsObject.linearDamping);
         physicsObject.velocity.x *= physicsObject.xVelDamping;
         physicsObject.velocity.y *= physicsObject.yVelDamping;
@@ -160,7 +159,7 @@ public class PhysicsLoop {
         double deltaTimeTransformed = deltaTime * 0.5;
         PhysicsObject physicsObject = gameObject.physicsObject;
 
-        if(physicsObject.invMass == 0) {
+        if (physicsObject.invMass == 0) {
             return;
         }
 

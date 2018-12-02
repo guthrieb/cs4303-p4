@@ -6,7 +6,7 @@ import collisiondetection.shapes.Vector;
 import java.util.List;
 
 public class ClippingPoints {
-    public Face getRelevantFace(Shape shape1, Vector collisionNormal) {
+    private Face getRelevantFace(Shape shape1, Vector collisionNormal) {
         Vector projected = shape1.support(collisionNormal);
         List<Vector> neighbours = shape1.getNeighbouringVertices(projected);
         Vector leftV = neighbours.get(0);

@@ -6,7 +6,7 @@ import drawing.Colour;
 import gameobjects.GameObject;
 
 public class HealthPowerUp extends GameObject {
-    private int health;
+    private final int health;
     private boolean used = false;
 
     public HealthPowerUp(String id, Vector position, double mass, double momentOfInertia, int health, Colour fillColour, Colour lineColour) {

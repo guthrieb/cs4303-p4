@@ -1,12 +1,10 @@
 package collisiondetection.shapes;
 
-import processing.core.PApplet;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class Simplex {
-    List<Vector> vertices = new ArrayList<>();
+    private final List<Vector> vertices = new ArrayList<>();
     private Vector lastAdded = null;
 
     public void add(Vector toAdd) {
@@ -25,9 +23,9 @@ public class Simplex {
 
     public List<Vector> getOtherVertices() {
         List<Vector> vectors = new ArrayList<>();
-        for (int i = 0; i < vertices.size(); i++) {
-            if (vertices.get(i) != lastAdded) {
-                vectors.add(vertices.get(i));
+        for (Vector vertice : vertices) {
+            if (vertice != lastAdded) {
+                vectors.add(vertice);
             }
         }
         return vectors;

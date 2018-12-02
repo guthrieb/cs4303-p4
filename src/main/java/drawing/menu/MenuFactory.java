@@ -5,7 +5,7 @@ import drawing.Colour;
 import drawing.Sketch;
 
 public class MenuFactory {
-    public static final String MAIN_MENU_KEY = "main_menu";
+    private static final String MAIN_MENU_KEY = "main_menu";
     private final Sketch sketch;
 
     public MenuFactory(Sketch sketch) {

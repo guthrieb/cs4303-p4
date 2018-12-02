@@ -7,8 +7,8 @@ import java.util.List;
 
 public class GameMap {
     private final List<GameObject> worldObjects;
-    private List<Vector> playerSpawns;
-    private List<Vector> powerUpSpawns;
+    private final List<Vector> playerSpawns;
+    private final List<Vector> powerUpSpawns;
 
     public GameMap(List<GameObject> worldObjects, List<collisiondetection.shapes.Vector> playerSpawns, List<Vector> powerUpSpawns) {
         this.worldObjects = worldObjects;

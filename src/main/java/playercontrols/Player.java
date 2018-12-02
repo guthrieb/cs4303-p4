@@ -36,7 +36,7 @@ public class Player extends GameObject {
 
 
     private final Sketch sketch;
-    public Colour playerColour;
+    public final Colour playerColour;
 
 
     private boolean firing = false;
@@ -44,16 +44,16 @@ public class Player extends GameObject {
     private boolean tethered;
     private Tether tether;
 
-    private HashMap<String, Timer> timers = new HashMap<>();
+    private final HashMap<String, Timer> timers = new HashMap<>();
     private Mode mode = Mode.MOVEMENT;
     private RotationDirection currentRotation = RotationDirection.NO_ROTATION;
     private static final double ACCELERATION_RATE = 0.1;
 
 
-    private int maxHealth = 1000;
+    private final int maxHealth = 1000;
     private int remainingHealth = 1000;
     private boolean dead = false;
-    private Timer trailTimer = new Timer(100);
+    private final Timer trailTimer = new Timer(100);
 
 
     public void setRotating(RotationDirection direction) {
@@ -369,7 +369,7 @@ public class Player extends GameObject {
         }
     }
 
-    private Vector collisionOfRay = null;
+    private final Vector collisionOfRay = null;
     private void handleFiring(List<GameObject> objects) {
         double xComponent = Math.cos(physicsObject.orientation);
         double yComponent = Math.sin(physicsObject.orientation);
@@ -464,7 +464,6 @@ public class Player extends GameObject {
         double laserPower = 100000000;
         return new Laser(physicsObject.position.copy(), closestIntersection,
                 firingOrientation.multiplyN(laserPower * firingMode.laserMod), closestObject, fillColour);
-//        return closestIntersection;
     }
 
 

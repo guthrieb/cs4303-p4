@@ -5,7 +5,7 @@ import drawing.Colour;
 import drawing.Sketch;
 import processing.core.PConstants;
 
-public class MenuBox {
+class MenuBox {
     private final Sketch sketch;
     private final boolean runnable;
     private String content;
@@ -13,8 +13,8 @@ public class MenuBox {
     private final float width;
     private final float height;
     private final Runnable consumer;
-    private String id;
-    public Colour highlightColour = new Colour(255, 0, 0, 100);
+    private final String id;
+    private final Colour highlightColour = new Colour(255, 0, 0, 100);
     public Colour fillColour = new Colour(255, 255, 255, 100);
 
     public MenuBox(Sketch sketch, String id, String content, Vector screenPos, float width, float height, Runnable consumer) {

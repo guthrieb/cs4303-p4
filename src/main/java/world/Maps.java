@@ -17,7 +17,7 @@ public class Maps {
     private static final int MAP_HEIGHT_1 = 2150;
     private static final Colour RED = new Colour(255, 0, 0);
     private static final Colour GREY = new Colour(100, 100, 100);
-    private static List<GameObject> flooredMap = new ArrayList<>(
+    private static final List<GameObject> flooredMap = new ArrayList<>(
             Arrays.asList(
                     new GameObject("left_wall", new Shape(MapComponentVertices.WALL_SHAPE_1), new Vector(0, 1000), 0, 0, GREY, GREY),
                     new GameObject("right_wall", new Shape(MapComponentVertices.WALL_SHAPE_1), new Vector(MAP_WIDTH_1, 1000), 0, 0, GREY, GREY),
@@ -31,7 +31,7 @@ public class Maps {
             )
     );
 
-    private static List<GameObject> obstacleLayout1 = new ArrayList<>(
+    private static final List<GameObject> obstacleLayout1 = new ArrayList<>(
             Arrays.asList(
                     new GameObject("object1", new Shape(MapComponentVertices.scale(MapComponentVertices.OCTAGON, 8)),
                             new Vector(MAP_WIDTH_1 / 2f, MAP_HEIGHT_1 / 2f), 0, 0, GREY, GREY),
@@ -50,7 +50,7 @@ public class Maps {
             )
     );
 
-    private static List<GameObject> obstacleLayout2 = new ArrayList<>(
+    private static final List<GameObject> obstacleLayout2 = new ArrayList<>(
             Arrays.asList(
                     new GameObject("object1", new Shape(MapComponentVertices.scale(MapComponentVertices.OCTAGON, 4)),
                             new Vector(MAP_WIDTH_1 / 4f, MAP_HEIGHT_1 / 4f), 0, 0, GREY, GREY),
@@ -66,7 +66,7 @@ public class Maps {
             )
     );
 
-    private static List<GameObject> obstacleLayout4 = new ArrayList<>(
+    private static final List<GameObject> obstacleLayout4 = new ArrayList<>(
             Arrays.asList(
                     new GameObject("object1", new Shape(MapComponentVertices.scale(MapComponentVertices.OCTAGON, 4)),
                             new Vector(MAP_WIDTH_1 * 3 / 20f, MAP_HEIGHT_1 / 4f), 0, 0, GREY, GREY),
@@ -85,15 +85,15 @@ public class Maps {
             )
     );
 
-    private static List<GameObject> obstacleLayout3 = new ArrayList<>(
-            Arrays.asList(
+    private static final List<GameObject> obstacleLayout3 = new ArrayList<>(
+            Collections.singletonList(
                     new GameObject("object1", new Shape(MapComponentVertices.scale(MapComponentVertices.OCTAGON, 10)),
                             new Vector(MAP_WIDTH_1 / 2f, MAP_HEIGHT_1 / 2f), 0, 0, GREY, GREY)
 
             )
     );
 
-    private static List<GameObject> bottomlessMap = new ArrayList<>(
+    private static final List<GameObject> bottomlessMap = new ArrayList<>(
             Arrays.asList(
                     new DestroyerBeam("beam1", new Shape(MapComponentVertices.scale(MapComponentVertices.DESTROYER_BEAM_HORIZONTAL, 1)), new Vector(MAP_WIDTH_1 / 2.0, Maps.MAP_HEIGHT_1)),
                     new DestroyerBeam("beam2", new Shape(MapComponentVertices.scale(MapComponentVertices.DESTROYER_BEAM_HORIZONTAL, 1)), new Vector(MAP_WIDTH_1 / 2.0, Maps.MAP_HEIGHT_1 - 40)),
@@ -104,7 +104,7 @@ public class Maps {
             )
     );
 
-    private static List<GameObject> bottomlessAndToplessMap = new ArrayList<>(
+    private static final List<GameObject> bottomlessAndToplessMap = new ArrayList<>(
             Arrays.asList(
                     new DestroyerBeam("beam1", new Shape(MapComponentVertices.scale(MapComponentVertices.DESTROYER_BEAM_HORIZONTAL, 1)), new Vector(MAP_WIDTH_1 / 2.0, Maps.MAP_HEIGHT_1)),
                     new DestroyerBeam("beam2", new Shape(MapComponentVertices.scale(MapComponentVertices.DESTROYER_BEAM_HORIZONTAL, 1)), new Vector(MAP_WIDTH_1 / 2.0, Maps.MAP_HEIGHT_1 - 40)),
@@ -118,7 +118,7 @@ public class Maps {
             )
     );
 
-    private static List<GameObject> questionMarkMap = new ArrayList<>(
+    private static final List<GameObject> questionMarkMap = new ArrayList<>(
             Arrays.asList(
                     new DestroyerBeam("bottom_beam1", new Shape(MapComponentVertices.scale(MapComponentVertices.DESTROYER_BEAM_HORIZONTAL, 1)), new Vector(MAP_WIDTH_1 / 2.0, Maps.MAP_HEIGHT_1)),
                     new DestroyerBeam("bottom_beam2", new Shape(MapComponentVertices.scale(MapComponentVertices.DESTROYER_BEAM_HORIZONTAL, 1)), new Vector(MAP_WIDTH_1 / 2.0, Maps.MAP_HEIGHT_1 - 40)),
@@ -135,7 +135,7 @@ public class Maps {
             )
     );
 
-    public static GameMap gameMap1 = new GameMap(obstacleLayout1,
+    private static final GameMap gameMap1 = new GameMap(obstacleLayout1,
             new ArrayList<>(Arrays.asList(new Vector(MAP_WIDTH_1 / 4, MAP_HEIGHT_1 / 4f), new Vector(MAP_WIDTH_1 * 3 / 4, MAP_HEIGHT_1 / 4f))),
             new ArrayList<>(
                     Arrays.asList(
@@ -150,7 +150,7 @@ public class Maps {
                             new Vector(MAP_WIDTH_1 * 6 / 7, MAP_HEIGHT_1 * 2 / 4f)
                     )
             ));
-    public static GameMap gameMap2 = new GameMap(obstacleLayout2,
+    private static final GameMap gameMap2 = new GameMap(obstacleLayout2,
             new ArrayList<>(Arrays.asList(new Vector(MAP_WIDTH_1 / 4, MAP_HEIGHT_1 / 2f), new Vector(MAP_WIDTH_1 * 3 / 4, MAP_HEIGHT_1 * 2 / 4f))),
             new ArrayList<>(
                     Arrays.asList(
@@ -168,7 +168,7 @@ public class Maps {
                     )
             ));
 
-    public static GameMap gameMap3 = new GameMap(obstacleLayout3,
+    private static final GameMap gameMap3 = new GameMap(obstacleLayout3,
             new ArrayList<>(Arrays.asList(new Vector(MAP_WIDTH_1 / 4, MAP_HEIGHT_1 / 4f), new Vector(MAP_WIDTH_1 * 3 / 4, MAP_HEIGHT_1 / 4f))),
             new ArrayList<>(
                     Arrays.asList(
@@ -186,7 +186,7 @@ public class Maps {
                     )
             ));
 
-    public static GameMap gameMap4 = new GameMap(obstacleLayout4,
+    private static final GameMap gameMap4 = new GameMap(obstacleLayout4,
             new ArrayList<>(Arrays.asList(new Vector(MAP_WIDTH_1 / 4, MAP_HEIGHT_1 / 4f), new Vector(MAP_WIDTH_1 * 3 / 4, MAP_HEIGHT_1 / 4f))),
             new ArrayList<>(
                     Arrays.asList(
@@ -217,7 +217,7 @@ public class Maps {
     public static final String MAP_3_NAME = "Map 3";
 
     public static final String MAP_4_NAME = "Map 4";
-    private static Map<String, List<GameObject>> floorLayouts = new HashMap<>();
+    private static final Map<String, List<GameObject>> floorLayouts = new HashMap<>();
 
     static {
         obstacleLayouts.put(MAP_1_NAME, gameMap1);

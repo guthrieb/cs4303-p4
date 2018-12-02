@@ -105,10 +105,9 @@ public class Vector {
         return a.x * b.y - a.y * b.x;
     }
 
-    public Vector set(double x, double y) {
+    public void set(double x, double y) {
         this.x = x;
         this.y = y;
-        return this;
     }
 
     public Vector addN(Vector vectpr) {
@@ -127,5 +126,4 @@ public class Vector {
     double squaredLength() {
         return x*x + y*y;
     }
-    // B(C.dot(A)) – A(C.dot(B)) TRIPLE PRODUCT
 }

@@ -2,7 +2,7 @@ package collisiondetection.epa;
 
 import collisiondetection.shapes.Vector;
 
-public class Edge {
+class Edge {
     public double distance;
     public Vector normal;
     public int index;

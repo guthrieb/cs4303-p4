@@ -9,12 +9,12 @@ import processing.core.PConstants;
 public class Trail {
     private final Sketch sketch;
     private final Colour fillColour;
-    Timer timer = new Timer(500);
-    Vector position;
-    double radius = 10;
-    double maxRadius = 10;
+    private final static double maxRadius = 10;
+    private final Timer timer = new Timer(500);
+    private final Vector position;
+    private double radius = 10;
 
-    public Trail(Sketch sketch, Vector position, Colour fillColour) {
+    Trail(Sketch sketch, Vector position, Colour fillColour) {
         this.position = position;
         this.sketch = sketch;
         this.fillColour = fillColour;

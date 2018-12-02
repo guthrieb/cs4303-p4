@@ -1,8 +1,8 @@
 package collisiondetection.epa;
 
-public class Projection {
-    double min;
-    double max;
+class Projection {
+    private final double min;
+    private final double max;
 
     public Projection(double minVal, double maxVal) {
         this.min = minVal;

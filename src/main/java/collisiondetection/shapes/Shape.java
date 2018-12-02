@@ -8,8 +8,8 @@ import java.util.List;
 
 public class Shape {
 
-    public collisiondetection.shapes.Polygon polygon;
-    private double orientation;
+    public final collisiondetection.shapes.Polygon polygon;
+    private final double orientation;
 
     @Override
     public String toString() {
@@ -23,7 +23,7 @@ public class Shape {
         this.orientation = 0;
     }
 
-    public Shape(Polygon polygon, double orientation) {
+    private Shape(Polygon polygon, double orientation) {
         this.polygon = polygon;
         this.orientation = orientation;
     }

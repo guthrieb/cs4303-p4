@@ -1,9 +1,9 @@
 package drawing;
 
 public class Colour {
-    public int r;
-    public int g;
-    public int b;
+    public final int r;
+    public final int g;
+    public final int b;
     public int alpha = 255;
     public Colour(int r, int g, int b) {
         this.r = r;

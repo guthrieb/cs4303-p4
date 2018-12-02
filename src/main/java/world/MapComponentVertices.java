@@ -2,7 +2,7 @@ package world;
 
 import collisiondetection.shapes.Vector;
 
-public class MapComponentVertices {
+class MapComponentVertices {
     public static final Vector[] WALL_SHAPE_2 = new Vector[]{
             new Vector(-2000, -100),
             new Vector(2000, -100),
@@ -41,20 +41,14 @@ public class MapComponentVertices {
             new Vector(-5, 2000)
     };
 
-    public static Vector[] WALL_SHAPE_1 = new Vector[]{
+    public static final Vector[] WALL_SHAPE_1 = new Vector[]{
             new Vector(-100, -1500),
             new Vector(100, -1500),
             new Vector(100, 1500),
             new Vector(-100, 1500)
     };
-//
-//    public static Vector[] WEDGE = new Vector[]{
-//            new Vector(0, -40),
-//            new Vector(30, 0),
-//            new Vector(-30, 0)
-//    };
 
-    public static Vector[] WEDGE = new Vector[]{
+    public static final Vector[] WEDGE = new Vector[]{
             new Vector(-40.0, 20.0),
             new Vector(0.0, -20.0),
             new Vector(40.0, 20.0)
@@ -72,14 +66,14 @@ public class MapComponentVertices {
             new Vector(2, -1)
     };
 
-    public static Vector[] SQUARE = new Vector[]{
+    public static final Vector[] SQUARE = new Vector[]{
             new Vector(-20, -20),
             new Vector(20, -20),
             new Vector(20, 20),
             new Vector(-20, 20)
     };
 
-    public static Vector[] OCTAGON = new Vector[]{
+    public static final Vector[] OCTAGON = new Vector[]{
             new Vector(-10.0, 30.0),
             new Vector(-30.0, 10.0),
             new Vector(-30.0, -10.0),

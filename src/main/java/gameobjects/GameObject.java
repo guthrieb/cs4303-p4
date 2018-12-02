@@ -16,13 +16,13 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class GameObject {
-    public String id;
+    public final String id;
     public Shape shape;
-    public collisionresponse.PhysicsObject physicsObject;
-    private boolean tetherable;
+    public final collisionresponse.PhysicsObject physicsObject;
+    public final double radiusMag;
     protected Colour fillColour;
     protected Colour lineColour;
-    public double radiusMag;
+    private final boolean tetherable;
 
     @Override
     public boolean equals(Object o) {
@@ -37,7 +37,7 @@ public class GameObject {
         return Objects.hash(id);
     }
 
-    public GameObject(String id, Shape shape, Vector position, double mass, double momentOfInertia, Colour fillColour, Colour lineColour, boolean tetherable) {
+    protected GameObject(String id, Shape shape, Vector position, double mass, double momentOfInertia, Colour fillColour, Colour lineColour, boolean tetherable) {
         this.id = id;
         this.shape = shape;
         this.physicsObject = new PhysicsObject(shape, position, mass, momentOfInertia);
@@ -106,7 +106,7 @@ public class GameObject {
 
     public CollisionManifoldData tryCollision(Sketch sketch, GameObject object2) {
 
-        CollisionManifoldData collisionManifest = getCollisionManifest(sketch, this, object2);
+        CollisionManifoldData collisionManifest = getCollisionManifest(this, object2);
 
         if (collisionManifest != null) {
             collisionManifest.addObjects(this, object2);
@@ -116,7 +116,7 @@ public class GameObject {
     }
 
 
-    private CollisionManifoldData getCollisionManifest(Sketch sketch, GameObject object1, GameObject object2) {
+    private CollisionManifoldData getCollisionManifest(GameObject object1, GameObject object2) {
         Shape thisShape = object1.shape;
         Shape thatShape = object2.shape;
 
@@ -130,10 +130,10 @@ public class GameObject {
         Shape shape1 = thisShape.translateN(object1PositionDiff);
         Shape shape2 = thatShape.translateN(object2PositionDiff);
 
-        Gjk gjk = new Gjk(shape1, shape2, sketch);
+        Gjk gjk = new Gjk(shape1, shape2);
         boolean collision = gjk.collision();
         if (collision) {
-            Epa epa = new Epa(sketch);
+            Epa epa = new Epa();
             epa.execute(shape1, shape2, gjk.getSimplex());
 
             ClippingPoints clippingPoints = new ClippingPoints();

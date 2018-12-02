@@ -1,6 +1,6 @@
 package collisiondetection.shapes;
 
-public class VectorConstants {
+class VectorConstants {
     public static final Vector[] VECTORS_2 = new Vector[]{
             new Vector(5, 7),
             new Vector(12, 7),

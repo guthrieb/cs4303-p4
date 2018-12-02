@@ -10,17 +10,15 @@ public class PhysicsObject {
     public double invMass;
     public Vector position;
 
-    public Vector velocity = new Vector(0, 0);
+    public final Vector velocity = new Vector(0, 0);
     public List<Force> forces = new ArrayList<>();
-    public double mass;
-    private double momentOfInertia;
+    public final double mass;
 
-    public Shape shape;
     public double orientation;
     double angularVelocity;
     public double invInertia;
-    double terminalVelocity = 100000;
-    public Vector mg;
+    public final Vector mg;
+    final double terminalVelocity = 100000;
     public double elasticity;
     public double linearDamping = 0.989;
     public double rotationalDamping = 0.96;
@@ -29,18 +27,16 @@ public class PhysicsObject {
     private List<Double> impulseCollisions = new ArrayList<>();
 
     public PhysicsObject(Shape shape, Vector position, double mass, double momentOfInertia) {
-        this.shape = shape;
         this.position = position;
         this.mass = mass;
-        this.momentOfInertia = momentOfInertia;
         if(mass != 0) {
             this.invMass = 1/mass;
         } else {
             this.invMass = 0;
         }
 
-        if(this.momentOfInertia != 0) {
-            this.invInertia = 1/ this.momentOfInertia;
+        if (momentOfInertia != 0) {
+            this.invInertia = 1 / momentOfInertia;
         } else {
             this.invInertia = 0;
         }

@@ -5,7 +5,7 @@ import processing.core.PConstants;
 
 import java.util.List;
 
-public class GameUI {
+class GameUI {
     private final Sketch sketch;
 
     public GameUI(Sketch sketch) {
