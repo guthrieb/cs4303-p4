@@ -28,15 +28,14 @@ public class SeparatingAxis {
         }
 
         for (Vector currentAxis : axes1) {
-            Projection p1 = project(shape1, object1.physicsObject.position, currentAxis);
-            Projection p2 = project(shape2, object2.physicsObject.position, currentAxis);
+            Projection p1 = projectOntoAxis(shape1, object1.physicsObject.position, currentAxis);
+            Projection p2 = projectOntoAxis(shape2, object2.physicsObject.position, currentAxis);
 
             if (!p1.overlaps(p2)) {
                 //No collision
                 return null;
             } else {
                 double tmpOverlap = p1.getOverlap(p2);
-
                 if (tmpOverlap < overlap) {
                     overlap = tmpOverlap;
                     smallestAxis = currentAxis;
@@ -46,17 +45,17 @@ public class SeparatingAxis {
         return new MinimumTranslationVector(overlap, smallestAxis);
     }
 
-    private Projection project(Shape shape, Vector position, Vector currentAxis) {
+    private Projection projectOntoAxis(Shape shape, Vector position, Vector currentAxis) {
         double minVal = Vector.dot(shape.polygon.vertices[0].addN(position), currentAxis);
         double maxVal = minVal;
 
         for(int i = 1; i < shape.polygon.vertexCount; i++) {
-            double p = Vector.dot(currentAxis, shape.polygon.vertices[i].addN(position));
+            double vertexToAxes = Vector.dot(currentAxis, shape.polygon.vertices[i].addN(position));
 
-            if(p < minVal) {
-                minVal = p;
-            } else if (p > maxVal) {
-                maxVal = p;
+            if (vertexToAxes < minVal) {
+                minVal = vertexToAxes;
+            } else if (vertexToAxes > maxVal) {
+                maxVal = vertexToAxes;
             }
         }
 

@@ -32,7 +32,7 @@ public class Player extends GameObject {
     private static final int BOOSTER_MASS = 2132;
     private static final int BOOSTER_MOMENT_INERTIA = 838101;
 
-    public LaserMode firingMode = LaserMode.standardLaserMode();
+    public LaserMode firingMode = LaserMode.laserRifleMode();
 
 
     private final Sketch sketch;
@@ -53,6 +53,7 @@ public class Player extends GameObject {
     private int maxHealth = 1000;
     private int remainingHealth = 1000;
     private boolean dead = false;
+    private Timer trailTimer = new Timer(100);
 
 
     public void setRotating(RotationDirection direction) {
@@ -138,9 +139,6 @@ public class Player extends GameObject {
 
                 if (intersected) {
 
-                    Vector centerPoint = object.physicsObject.position;
-                    intersectingObject.add(centerPoint);
-
                     Vector intersection = LineMath.getClosestIntersection(this.physicsObject.position, tetherDirection, object);
                     Vector thisToIntersection = intersection.subtractN(this.physicsObject.position);
 
@@ -185,7 +183,6 @@ public class Player extends GameObject {
         addTetherForce();
     }
 
-    Timer trailTimer = new Timer(100);
 
     private void updateMovementMode(List<GameObject> objects) {
         analyseDamages(1);
@@ -332,7 +329,6 @@ public class Player extends GameObject {
 
     private void addTetherForce() {
         if (tethered) {
-            sketch.point(tether.getPosition());
 
             double mass = physicsObject.mass;
             double radius = tether.getLength();
@@ -346,14 +342,9 @@ public class Player extends GameObject {
             perpVector.normalize();
 
             double velocityInPerp = Vector.dot(perpVector, physicsObject.velocity) / perpVector.mag();
-
-
             double theta = Math.atan2(position.y - tether.getPosition().y, position.x - tether.getPosition().x);
-
             double componentOfGravity = gravForce.mag() * Math.sin(theta);
-
             double forceMag = Math.abs((velocityInPerp * velocityInPerp * mass) / radius + componentOfGravity);
-
 
             Vector thetaComponents = new Vector(Math.cos(theta), Math.sin(theta)).multiplyN(200);
             Vector thetaComponents2 = thetaComponents.negateN();
@@ -374,15 +365,11 @@ public class Player extends GameObject {
             }
 
             Vector force = thetaComponents2.multiplyN(forceMag);
-            physicsObject.addForce("id", force, physicsObject.position, false);
-
+            physicsObject.addForce("tether_force", force, physicsObject.position, false);
         }
     }
 
     private Vector collisionOfRay = null;
-
-    private List<Vector> intersectingObject = new ArrayList<>();
-
     private void handleFiring(List<GameObject> objects) {
         double xComponent = Math.cos(physicsObject.orientation);
         double yComponent = Math.sin(physicsObject.orientation);
@@ -455,8 +442,6 @@ public class Player extends GameObject {
 
                 if (intersected) {
 
-                    Vector centerPoint = object.physicsObject.position;
-                    intersectingObject.add(centerPoint);
 
                     Vector intersection = LineMath.getClosestIntersection(this.physicsObject.position, firingOrientation, object);
                     sketch.point(intersection.multiplyN(Sketch.SCALE));
@@ -509,7 +494,8 @@ public class Player extends GameObject {
                 Vector potentialTether1 = new Vector(tetherDirectionX1, tetherDirectionY1).multiplyN(TETHER_LENGTH).addN(physicsObject.position);
                 Vector potentialTether2 = new Vector(tetherDirectionX2, tetherDirectionY2).multiplyN(TETHER_LENGTH).addN(physicsObject.position);
 
-                sketch.stroke(fillColour.r, fillColour.b, fillColour.g, 255);
+                sketch.stroke(playerColour.r, playerColour.g, playerColour.b, 100);
+                sketch.fill(playerColour.r, playerColour.g, playerColour.b, 100);
                 sketch.line(physicsObject.position.multiplyN(scale), potentialTether1.multiplyN(scale));
                 sketch.line(physicsObject.position.multiplyN(scale), potentialTether2.multiplyN(scale));
                 sketch.stroke(0, 0, 0);
@@ -523,11 +509,6 @@ public class Player extends GameObject {
             sketch.point(collisionOfRay.multiplyN(scale));
             sketch.line(collisionOfRay.multiplyN(scale), physicsObject.position.multiplyN(scale));
         }
-
-        for (Vector vector : intersectingObject) {
-            sketch.point(vector.multiplyN(scale));
-        }
-        intersectingObject = new ArrayList<>();
     }
 
     public void setFiring(boolean firing) {

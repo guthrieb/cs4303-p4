@@ -44,7 +44,6 @@ public class Vector {
     }
 
     public static Vector tripleProduct(Vector v1, Vector v2, Vector v3) {
-
         Vector vector = v2.multiplyN(dot(v3, v1));
         Vector vector2 = v1.multiplyN(dot(v3, v2));
         return vector.subtractN(vector2);
@@ -86,35 +85,16 @@ public class Vector {
         return Math.sqrt(x*x + y*y);
     }
 
-    public double angleBetween(Vector v1, Vector v2) {
-        double dot = dot(v1, v2);
-        double mag1 = v1.mag();
-        double mag2 = v2.mag();
-        return dot/(mag1*mag2);
-    }
-
-    public Vector multiply(double u) {
+    public void multiply(double u) {
         x*=u;
         y*=u;
-        return this;
     }
 
     public Vector cross(double scalar) {
         return new Vector(y*scalar, x*scalar*-1);
     }
 
-    public Vector cross2(double scalar) {
-        return new Vector(y*scalar, x*scalar*-1);
-    }
-
-    public static Vector cross( double a, Vector v, Vector out )
-    {
-        out.x = v.y * -a;
-        out.y = v.x * a;
-        return out;
-    }
-
-    public void adds( Vector v, double s)
+    public void add(Vector v, double s)
     {
         this.x = x + v.x * s;
         this.y = y + v.y * s;
@@ -123,11 +103,6 @@ public class Vector {
     public static double cross( Vector a, Vector b )
     {
         return a.x * b.y - a.y * b.x;
-    }
-
-    public void divide(double mass) {
-        this.x = x / mass;
-        this.y = y / mass;
     }
 
     public Vector set(double x, double y) {
@@ -140,20 +115,16 @@ public class Vector {
         return new Vector(x + vectpr.x, y + vectpr.y);
     }
 
-    public void addsi(Vector v, double s) {
+    public void addMultScalar(Vector v, double s) {
         this.x = x + v.x *s;
         this.y = y + v.y *s;
-    }
-
-    public static Vector cross(Vector v, double a) {
-        return new Vector(v.y * a, v.x * -a);
     }
 
     public static Vector cross(double a, Vector v) {
         return new Vector(v.y * -a, v.x * a);
     }
 
-    public double squaredLength() {
+    double squaredLength() {
         return x*x + y*y;
     }
     // B(C.dot(A)) – A(C.dot(B)) TRIPLE PRODUCT

@@ -8,12 +8,8 @@ import java.util.List;
 
 public class Shape {
 
-    public Vector[] getVertices() {
-        return polygon.vertices;
-    }
-
     public collisiondetection.shapes.Polygon polygon;
-    public double orientation;
+    private double orientation;
 
     @Override
     public String toString() {
@@ -73,7 +69,7 @@ public class Shape {
         }
     }
 
-    public void translate(double deltaX, double deltaY) {
+    private void translate(double deltaX, double deltaY) {
         for (int i = 0; i < polygon.vertexCount; i++) {
             Vector vertice = polygon.vertices[i];
             vertice.x += deltaX;
@@ -106,7 +102,7 @@ public class Shape {
         return Arrays.asList(left, right);
     }
 
-    public void translate(Vector delta) {
+    private void translate(Vector delta) {
         translate(delta.x, delta.y);
     }
 
@@ -152,13 +148,5 @@ public class Shape {
         shape.translate(subtractN);
         return shape;
     }
-
-//    public Shape copy() {
-//        Vector[] copyVertices = new Vector[polygon.vertices.length];
-//        for (int i = 0; i < polygon.vertexCount; i++) {
-//            copyVertices[i] = polygon.vertices[i].copy();
-//        }
-//        return new Shape(copyVertices);
-//    }
 
 }

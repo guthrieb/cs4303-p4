@@ -84,7 +84,7 @@ public class PhysicsObject {
     public void applyCollisionImpulse(Vector impulse, Vector contactVector) {
 
 
-        velocity.addsi( impulse, invMass );
+        velocity.addMultScalar(impulse, invMass);
 
         angularVelocity += invInertia * Vector.cross( contactVector, impulse );
 

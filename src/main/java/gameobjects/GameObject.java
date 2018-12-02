@@ -136,7 +136,7 @@ public class GameObject {
             Epa epa = new Epa(sketch);
             epa.execute(shape1, shape2, gjk.getSimplex());
 
-            ClippingPoints clippingPoints = new ClippingPoints(sketch);
+            ClippingPoints clippingPoints = new ClippingPoints();
             CollisionManifoldData collisionManifold = clippingPoints.getCollisionManifold(shape1, shape2, epa.normal);
 
             if (collisionManifold != null && collisionManifold.getPoints().size() > 0) {

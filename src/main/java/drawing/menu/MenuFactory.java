@@ -5,6 +5,7 @@ import drawing.Colour;
 import drawing.Sketch;
 
 public class MenuFactory {
+    public static final String MAIN_MENU_KEY = "main_menu";
     private final Sketch sketch;
 
     public MenuFactory(Sketch sketch) {
@@ -22,31 +23,36 @@ public class MenuFactory {
 
 
         MenuBox playButton = new MenuBox(sketch, "play_game", "Play!",
-                new Vector(sketch.width / 2f, sketch.height / 4f),
+                new Vector(sketch.width / 2f, sketch.height * 2 / 6f),
                 sketch.width / 6f, sketch.height / 10f,
                 sketch::beginPlay);
 
         MenuBox mapSelect = new MenuBox(sketch, "select_map", "Map 1",
-                new Vector(sketch.width / 2f, sketch.height * 2 / 4f),
+                new Vector(sketch.width / 2f, sketch.height * 3 / 6f),
                 sketch.width / 6f, sketch.height / 10f,
                 () -> {
                     sketch.nextMap();
                     sketch.updateMapText();
                 });
 
-        MenuBox flooredSelect = new MenuBox(sketch, "floored_select", "Floor: On",
-                new Vector(sketch.width / 2f, sketch.height * 3 / 4f),
+        MenuBox flooredSelect = new MenuBox(sketch, "floored_select", "Map Type: Floored",
+                new Vector(sketch.width / 2f, sketch.height * 4 / 6f),
                 sketch.width / 6f, sketch.height / 10f,
                 () -> {
                     sketch.changeFloor();
                     sketch.updateFloorText();
                 });
 
-        menu.addMenuBox("main_menu", title);
-        menu.addMenuBox("main_menu", playButton);
-        menu.addMenuBox("main_menu", mapSelect);
-        menu.addMenuBox("main_menu", flooredSelect);
-//        menu.addMenuBox("main_menu", quit);
+        MenuBox quit = new MenuBox(sketch, "quit", "Quit ",
+                new Vector(sketch.width / 2f, sketch.height * 7 / 8f),
+                sketch.width / 6f, sketch.height / 10f,
+                sketch::exit);
+
+        menu.addMenuBox(MAIN_MENU_KEY, title);
+        menu.addMenuBox(MAIN_MENU_KEY, playButton);
+        menu.addMenuBox(MAIN_MENU_KEY, mapSelect);
+        menu.addMenuBox(MAIN_MENU_KEY, flooredSelect);
+        menu.addMenuBox(MAIN_MENU_KEY, quit);
 
         return menu;
     }

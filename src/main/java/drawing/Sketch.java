@@ -39,7 +39,7 @@ public class Sketch extends PApplet {
     public static final String MACHINE_GUN_KEY = "machine_gun";
     public static final String DESTROYED_KEY = "destroyed";
     private static final int POWERUP_LIMIT = 3;
-    private static final int POWERUP_PROBABILITY = 700;
+    private static final int POWERUP_PROBABILITY = 200;
     private PImage background;
     private static int healthPackNo = 0;
     private static int weaponPackNo = 0;
@@ -106,6 +106,7 @@ public class Sketch extends PApplet {
     }
 
     public void beginPlay() {
+        noOfPowerups = 0;
         initialiseMap(maps.get(currentMap), floors.get(currentFloor), true);
         countDownTimer.reset();
         state = GameState.COUNTDOWN;
@@ -317,6 +318,7 @@ public class Sketch extends PApplet {
 
     public void draw() {
         background(200, 200, 200);
+        System.out.println(noOfPowerups);
         background(background);
         ListIterator<Trail> trailListIterator = trails.listIterator();
         while (trailListIterator.hasNext()) {
@@ -364,10 +366,18 @@ public class Sketch extends PApplet {
             }
 
             textSize(100);
-            Colour playerColour = winningPlayer.playerColour;
-            stroke(playerColour.r, playerColour.g, playerColour.b);
-            fill(playerColour.r, playerColour.g, playerColour.b);
-            text(winningPlayer.id.toUpperCase() + " WINS", width / 2f, height / 2f);
+
+            if (winningPlayer != null) {
+                Colour textColour = winningPlayer.playerColour;
+                stroke(textColour.r, textColour.g, textColour.b);
+                fill(textColour.r, textColour.g, textColour.b);
+                text(winningPlayer.id.toUpperCase() + " WINS", width / 2f, height / 2f);
+            } else {
+                Colour textColour = new Colour(255, 255, 255);
+                stroke(textColour.r, textColour.g, textColour.b);
+                fill(textColour.r, textColour.g, textColour.b);
+                text("DRAW", width / 2f, height / 2f);
+            }
             textSize(20);
             text("Press \"r\" to play again, \"m\" to return to the main menu and \"q\" to quit!", width / 2f, height * 3 / 5f);
             textSize(10);
@@ -412,6 +422,7 @@ public class Sketch extends PApplet {
 
             if (gameOver()) {
                 state = GameState.GAME_OVER;
+                noOfPowerups = 0;
             }
         }
     }
@@ -446,6 +457,7 @@ public class Sketch extends PApplet {
         int i = random.nextInt(POWERUP_PROBABILITY);
 
         if (noOfPowerups < POWERUP_LIMIT && i == 0) {
+            // Check if able to spawn a powerup if yes, choose random powerup and spawn in random location
             noOfPowerups++;
             int spawnLocationIndex = random.nextInt(spawnLocations.size());
             Vector vector = spawnLocations.get(spawnLocationIndex);
@@ -467,7 +479,7 @@ public class Sketch extends PApplet {
 
         if (laserType == 0) {
             physicsLoop.objects.add(new WeaponPowerUp("powerup_" + weaponPackNo++, "Laser Rifle", vector.copy(), POWERUP_MASS, POWERUP_MOMENT_INERTIA,
-                    LaserMode.standardLaserMode(), WEAPON_FILL_COLOUR, WEAPON_LINE_COLOUR));
+                    LaserMode.laserRifleMode(), WEAPON_FILL_COLOUR, WEAPON_LINE_COLOUR));
         } else if (laserType == 1) {
             physicsLoop.objects.add(new WeaponPowerUp("powerup_" + weaponPackNo++, "Laser Shotgun", vector.copy(), POWERUP_MASS, POWERUP_MOMENT_INERTIA,
                     LaserMode.shotgunLasers(), WEAPON_FILL_COLOUR, WEAPON_LINE_COLOUR));

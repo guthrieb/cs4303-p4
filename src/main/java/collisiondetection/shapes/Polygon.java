@@ -73,7 +73,7 @@ public class Polygon {
                 '}';
     }
 
-    public Polygon copy() {
+    Polygon copy() {
         Vector[] vertices = new Vector[vertexCount];
 
         for(int i = 0; i < vertexCount; i++) {
